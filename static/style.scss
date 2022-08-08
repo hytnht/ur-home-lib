@@ -1,0 +1,72 @@
+/* Theme color */
+$primary: #235AC6;
+$secondary: #1A2579;
+$success: #004B35;
+$info: #FFCECE;
+$warning: #F4D35E;
+$danger: #FF2132;
+$light: #F8FCFB;
+$dark: #1C1F37;
+$shadow: #c5c5c5;
+$lightshadow: #eeeeee;
+
+@import "~bootstrap/scss/bootstrap.scss";
+
+/* Title */
+h1 {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: $dark;
+    margin: 3rem 0;
+}
+
+/* Link */
+a {
+    text-decoration: none;
+    color: $secondary;
+    font-weight: bold;
+}
+
+/* Navbar */
+#nav-logo {
+    height: 60px;
+}
+.navbar-collapse {
+    flex-grow: 0;
+}
+.nav-link {
+    color: $primary;
+    font-size: 1.25em;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    margin-left: 1em;
+    text-transform: uppercase;
+}
+/* Section */
+section {
+    margin: 5%;
+}
+
+/* Services */
+.features {
+    background-color: $lightshadow;
+}
+.sv-icon {
+    color: $primary;
+    font-size: 3rem;
+    text-align: center;
+    padding: 2rem;
+}
+.skew {
+    transform: skewX(5deg);
+    box-shadow: -3px 3px 2px 1px $shadow;
+}
+
+/* About */
+.references img {
+    height: 80px;
+    width: auto;
+    filter: grayscale(1);
+    opacity: .3;
+}
+

@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="icon" type="image/x-icon" href="../static/img/favicon.ico">
+    <link href="../static/style.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+            crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/edd8c77b7c.js" crossorigin="anonymous"></script>
+    <title>CS50 Final Project - Home Library</title>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <img alt="Logo" id="nav-logo" src="../static/img/full-logo.png">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav nav-pills me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Log In</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Carousel banner -->
+    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="../static/img/banner-1.jpg" class="d-block w-100" alt="banner 1">
+            </div>
+            <div class="carousel-item">
+                <img src="../static/img/banner-2.jpg" class="d-block w-100" alt="banner 2">
+            </div>
+            <div class="carousel-item">
+                <img src="../static/img/banner-3.jpg" class="d-block w-100" alt="banner 3">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+                data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+                data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</header>
+
+<main>
+    <!-- Services -->
+    <section id="services">
+        <h1 class="text-center">Services</h1>
+        <div class="row text-center mb-5">
+            <div class="col">
+                <i class="fa-solid fa-forward sv-icon"></i>
+                <h4>Quick and easy</h4>
+                <p>Help you manage your book collection and track publish status with multiple support features.</p>
+            </div>
+            <div class="col">
+                <i class="fa-solid fa-arrows-to-circle sv-icon"></i>
+                <h4>Multiple options</h4>
+                <p>Organize by authors, series, reality position or even cover's color! It's all up to you.</p>
+            </div>
+            <div class="col">
+                <i class="fa-solid fa-user-lock sv-icon"></i>
+                <h4>Private storage</h4>
+                <p>It's mainly statistical and no community activities. Everything is on your own.</p>
+            </div>
+        </div>
+    </section>
+    <!-- Features -->
+    <section class="features mx-0">
+        <div class="row p-5">
+            <div class="col-4">
+                <img alt="screenshot" class="img-fluid rounded skew" src="static/img/screenshot.jpg">
+            </div>
+            <div class="col-8 ps-5">
+                <div class="row">
+                    <h4>What Can This Website Do?</h4>
+                    <figure>
+                        <blockquote class="blockquote">
+                            <p>"A place for everything, and everything in its place."</p>
+                        </blockquote>
+                        <figcaption class="blockquote-footer">
+                            Mrs. Beeton, <cite title="The Book of Household Management">The Book of Household
+                            Management</cite>
+                        </figcaption>
+                    </figure>
+                </div>
+                <div class="row">
+                    <div class="col w-50">
+                        <h5>Book manager</h5>
+                        <p>Mass upload using stylesheet and scanner. Save your time from boring typing.</p>
+                    </div>
+                    <div class="col w-50">
+                        <h5>Series follower</h5>
+                        <p>Notify publishing day and stocks in commercial sites. Keep track of the next book in
+                            series.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col w-50">
+                        <h5>Trade logger</h5>
+                        <p>Record all your collection's in-and-out activities. Never forget who borrowed your
+                            books.</p>
+                    </div>
+                    <div class="col w-50">
+                        <h5>Position saver</h5>
+                        <p>Your little librarian that memorize every single position in the bookshelves.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="about ">
+        <h1 class="text-center">About</h1>
+        <div class="row introduction text-center">
+            <p>This is the final project for CS50 Introduction to Computer Science - a free course by Havard
+                University. You can take a look <a href=https://cs50.harvard.edu/x/2022/>here</a>.
+            </p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
+                ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+                deserunt mollit anim id est laborum.</p>
+        </div>
+        <div class="row references d-flex justify-content-around pt-5">
+            <img src="../static/img/bootstrap.png" alt="bootstrap">
+            <img src="../static/img/canva.png" alt="canva">
+            <img src="../static/img/fontawesome.png" alt="fontawesome">
+            <img src="../static/img/flask.png" alt="flask">
+        </div>
+
+    </section>
+    <section id="contact">
+
+    </section>
+</main>
+</body>
+</html>

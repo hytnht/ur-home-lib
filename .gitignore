@@ -1,0 +1,7 @@
+*.pptx
+.idea/
+node_modules/
+venv/
+.venv/
+*.css
+*.css.map
