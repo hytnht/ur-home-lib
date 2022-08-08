@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block actions %}
+<li class="nav-item">
+    <a class="nav-link" href="#">
+        Insert
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="#">
+        Mass upload
+    </a>
+</li>
+{% endblock actions %}
+
+
+{% block sub-btn %}
+<button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle me-2 px-3">
+    <i class="fa-solid fa-arrow-down-short-wide me-2"></i>
+    Sort by
+</button>
+<button type="button" class="btn btn-sm btn-outline-secondary me-2 px-3">
+    <i class="fa-solid fa-plus me-2"></i>
+    Insert new
+</button>
+{% endblock sub-btn %}
+
+
+{% block table-head %}
+<tr>
+    <th scope="col">#</th>
+</tr>
+{% endblock table-head %}
+
+
+{% block table %}
+<tr>
+    <td>1,001</td>
+</tr>
+<tr>
+    <td>1,002</td>
+</tr>
+{% endblock table %}
+
+
