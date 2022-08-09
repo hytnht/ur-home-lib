@@ -11,9 +11,11 @@
             integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
             crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/edd8c77b7c.js" crossorigin="anonymous"></script>
+    <script src="../static/script.js"></script>
     <title>CS50 Final Project - Home Library</title>
 </head>
 <body class="container-fluid px-0">
+
 <!-- Header -->
 <header>
     <!-- Navigation bar -->
@@ -39,7 +41,8 @@
                         <a class="nav-link" href="#contact">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <button type="button" class="nav-link btn btn-primary" data-bs-toggle="modal" data-bs-target="#login">
+                        <button type="button" class="nav-link btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#modal">
                             Login
                         </button>
                     </li>
@@ -74,37 +77,14 @@
     </div>
 </header>
 
-<main>
-    <!-- Login modal -->
-    <div class="modal modal-signin fade" id="login" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-5 shadow">
-                <div class="modal-header p-5 pb-4 border-bottom-0">
-                    <h2 class="fw-bold mb-0">Login</h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-5 pt-0">
-                    <form class="">
-                        <div class="form-floating mb-3">
-                            <input type="email" class="form-control rounded-4" id="email" placeholder="name@example.com">
-                            <label for="email">Email address</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input type="password" class="form-control rounded-4" id="password" placeholder="Password">
-                            <label for="password">Password</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input type="password" class="form-control rounded-4" id="confirm-password" placeholder="Confirm password">
-                            <label for="confirm-password">Confirm password</label>
-                        </div>
-                        <span class="text-muted">Forgot password?</span>
-                        <button class="w-100 mb-2 mt-4 btn btn-lg rounded-4 btn-primary" type="submit">Let me in!</button>
-                    </form>
-                </div>
-            </div>
-        </div>
+<!-- Login modal -->
+<div class="modal modal-signin fade" tabindex="-1" id="modal">
+    <div class="modal-dialog modal-dialog-centered" id="modal-template">
+        {% include '_login.html' %}
     </div>
+</div>
 
+<main>
     <!-- Services -->
     <section id="services">
         <h1 class="text-center">Services</h1>
@@ -210,22 +190,42 @@
         </form>
     </section>
 </main>
+
 <!-- Footer -->
-<div class="footer">
-    <footer class="bg-primary d-flex flex-wrap justify-content-between align-items-center py-3 my-3 border-top">
-        <span class="px-5">&copy 2022 CS50x Final Project</span>
-        <ul class=" justify-content-end list-unstyled d-flex m-3 px-5">
-            <li class="ms-3"><a href="https://github.com/hytnht">
-                <i class="fa-brands fa-github bi"></i>
-            </a></li>
-            <li class="ms-3"><a href="https://www.linkedin.com/in/tnht/">
-                <i class="fa-brands fa-linkedin bi"></i>
-            </a></li>
-            <li class="ms-3"><a href="#">
-                <i class="fa-solid fa-globe bi"></i>
-            </a></li>
-        </ul>
-    </footer>
+<footer class="bg-primary d-flex flex-wrap justify-content-between align-items-center py-3 my-3 border-top">
+    <span class="px-5">&copy 2022 CS50x Final Project</span>
+    <ul class=" justify-content-end list-unstyled d-flex m-3 px-5">
+        <li class="ms-3"><a href="https://github.com/hytnht">
+            <i class="fa-brands fa-github bi"></i>
+        </a></li>
+        <li class="ms-3"><a href="https://www.linkedin.com/in/tnht/">
+            <i class="fa-brands fa-linkedin bi"></i>
+        </a></li>
+        <li class="ms-3"><a href="#">
+            <i class="fa-solid fa-globe bi"></i>
+        </a></li>
+    </ul>
+</footer>
+
+<!--Toasts-->
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="toast show {{ category }}">
+            <div class="toast-header show showing">
+                <strong class="me-auto">{{ category }}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                {{ message }}
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
 </div>
 </body>
 </html>

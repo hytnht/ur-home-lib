@@ -11,7 +11,8 @@
             integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
             crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/edd8c77b7c.js" crossorigin="anonymous"></script>
-    <title>{{ title }}</title>
+    <script src="../static/script.js"></script>
+    <title>Your Home Library - {% block title %}{% endblock title %}</title>
 </head>
 
 <body class="container-fluid px-0">
@@ -104,9 +105,9 @@
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 <!--            Buttons-->
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">{{ title }}</h1>
+                <h1 class="h2">{{ self.title() }}</h1>
                 <div class="btn-toolbar mb-2 mb-md-0" id="sub-btn">
-                    {% block sub-btn %}{% endblock sub-btn %}
+                    {% block sub_btn %}{% endblock sub_btn %}
                 </div>
             </div>
 
@@ -114,7 +115,7 @@
             <div class="table-responsive">
                 <table class="table table-striped table-sm">
                     <<thead>
-                    {% block table-head %}{% endblock table-head %}
+                    {% block table_head %}{% endblock table_head %}
                     </thead>
                     <tbody>
                     {% block table %}{% endblock table %}
@@ -122,6 +123,14 @@
                 </table>
             </div>
         </main>
+    </div>
+</div>
+
+<!--Toasts-->
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+    <div class="toast-container position-absolute bottom-0 end-0 p-3" id="liveToast">
+        {% block toast %}
+        {% endblock toast %}
     </div>
 </div>
 </body>
