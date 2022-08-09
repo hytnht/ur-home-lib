@@ -1,0 +1,19 @@
+<div class="modal-content rounded-5 shadow" id="forgot">
+    <div class="modal-header p-5 pb-4 border-bottom-0">
+        <h2 class="fw-bold mb-0">Forgor Password</h2>
+        <button type="button" class="btn-close close-modal" data-bs-dismiss="modal" aria-label="Close" onclick="login()"></button>
+    </div>
+    <div class="modal-body p-5 pt-0">
+        <form action="/reset-pass" method="post">
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control rounded-4" id="password" name="password" placeholder="Password">
+                <label for="password">New password</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control rounded-4" id="confirm-password" name="confirm" placeholder="Password">
+                <label for="confirm-password">Confirm password</label>
+            </div>
+            <button class="w-100 mb-2 mt-4 btn btn-lg rounded-4 btn-primary" type="submit" onclick="login()">Change password
+            </button>
+        </form>
+    </div>

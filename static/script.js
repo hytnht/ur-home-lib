@@ -1,8 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-        setTimeout(function() {
-            $('.alert').fadeOut('slow');
-        }, 2000); // <-- time in milliseconds
 })
 // Change login modal
 let modal = document.querySelector("#modal-template");
@@ -27,4 +24,14 @@ function forgot() {
         .then(text => document.querySelector("#modal-template").innerHTML = text);
 }
 
+function send_code() {
+    fetch('reset-code')
+        .then(response => response.text())
+        .then(text => document.querySelector("#modal-template").innerHTML = text);
+}
 
+function reset() {
+    fetch('reset-pass')
+        .then(response => response.text())
+        .then(text => document.querySelector("#modal-template").innerHTML = text);
+}

@@ -1,17 +1,17 @@
-<div class="modal-content rounded-5 shadow" id="forgot">
+<div class="modal-content rounded-5 shadow" id="reset_code">
     <div class="modal-header p-5 pb-4 border-bottom-0">
         <h2 class="fw-bold mb-0">Forgor Password</h2>
         <button type="button" class="btn-close close-modal" data-bs-dismiss="modal" aria-label="Close" onclick="login()"></button>
     </div>
     <div class="modal-body p-5 pt-0">
-        <form action="/forgot" method="post">
+        <form action="/reset-code" method="post">
             <div class="form-floating mb-3">
-                <input type="email" class="form-control rounded-4" id="email" name="email"
+                <input type="text" class="form-control rounded-4" id="reset-code" name="reset-code"
                        placeholder="name@example.com">
-                <label for="email">Email address</label>
+                <label for="reset-code">6 digits code</label>
             </div>
-                <button class="w-100 mb-2 mt-4 btn btn-lg rounded-4 btn-primary" type="submit" onclick="send_code()">Send code
-                </button>
+            <button class="w-100 mb-2 mt-4 btn btn-lg rounded-4 btn-primary" type="submit" onclick="reset()">Submit
+            </button>
         </form>
     </div>
 </div>

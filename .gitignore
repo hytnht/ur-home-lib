@@ -1,9 +1,12 @@
-*.pptx
 .idea/
 node_modules/
 env/
 venv/
 .venv/
+*_session/
 *.css
 *.css.map
-*..sqlite
+*.sqlite
+*.pptx
+*.env
+env.py
