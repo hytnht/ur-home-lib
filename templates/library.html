@@ -19,31 +19,25 @@ Library
 
 
 {% block sub_btn %}
-    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle me-2 px-3">
-        <i class="fa-solid fa-arrow-down-short-wide me-2"></i>
-        Sort by
+    <button type="button" class="btn btn-sm btn-outline-secondary me-2 px-3">
+        <i class="fa-solid fa-minus me-2"></i>
+        Delete items
     </button>
+
     <button type="button" class="btn btn-sm btn-outline-secondary me-2 px-3">
         <i class="fa-solid fa-plus me-2"></i>
-        Insert new
+        Insert column
     </button>
 {% endblock sub_btn %}
 
-
-{% block table_head %}
-    <tr>
-        <th scope="col">#</th>
-    </tr>
-{% endblock table_head %}
+{% block content %}
+    {% include '%s' % content %}
+{% endblock content %}
 
 
-{% block table %}
-    <tr>
-        <td>1,001</td>
-    </tr>
-    <tr>
-        <td>1,002</td>
-    </tr>
-{% endblock table %}
+
+
+
+
 
 

@@ -24,13 +24,13 @@ function forgot() {
         .then(text => document.querySelector("#modal-template").innerHTML = text);
 }
 
-function send_code() {
+function reset_code() {
     fetch('reset-code')
         .then(response => response.text())
         .then(text => document.querySelector("#modal-template").innerHTML = text);
 }
 
-function reset() {
+function reset_pass() {
     fetch('reset-pass')
         .then(response => response.text())
         .then(text => document.querySelector("#modal-template").innerHTML = text);

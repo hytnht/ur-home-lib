@@ -27,10 +27,15 @@ Session(app)
 # Connect database
 db = SQL("sqlite:///database.db")
 
-
 # # Make sure API key is set
 # if not os.environ.get("API_KEY"):
 #     raise RuntimeError("API_KEY not set")
+
+# Global variables
+reset_email = None
+reset_code_created = None
+username = None
+
 
 @app.after_request
 def after_request(response):
@@ -46,9 +51,18 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/home")
-def home():
-    return render_template("homepage.html")
+@app.route("/library")
+def library():
+    # Query database
+    books = db.execute("SELECT * FROM book WHERE user_id = ?", session["user_id"])
+
+    # Get columns' names
+    if len(books) > 0:
+        columns = books[0].keys()
+        return render_template("library.html", content="_table.html", table_head=columns, table_data=books,
+                               username=username)
+
+    return render_template("library.html", content="_blank.html", username=username)
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -61,7 +75,7 @@ def login():
         email = request.form.get("email")
         password = request.form.get("password")
 
-        # Ensure username was submitted
+        # Ensure email was submitted
         if not email:
             flash("Please enter your email.", "Error")
             return redirect("/")
@@ -80,10 +94,12 @@ def login():
             return redirect("/")
 
         # Remember which user has logged in
+        global username
+        username = email.partition("@")[0]
         session["user_id"] = user[0]["id"]
 
         # Redirect user to home page
-        return redirect("/home")
+        return redirect("/library")
 
     else:
         return render_template("_login.html")
@@ -134,9 +150,11 @@ def register():
         mail.send(message)
 
         # Log in
+        global username
+        username = email.partition("@")[0]
         session["user_id"] = new_user
 
-        return redirect("/home")
+        return redirect("/library")
 
     else:
         return render_template("_register.html")
@@ -146,14 +164,15 @@ def register():
 def forgot():
     if request.method == "POST":
         # Get input
+        email = request.form.get("email")
+        global reset_code_created
         global reset_email
-        reset_email = request.form.get("email")
 
         # Query database
-        check = db.execute("SELECT email FROM user WHERE email = ?", reset_email)
+        check = db.execute("SELECT email FROM user WHERE email = ?", email)
 
         # Ensure username was submitted
-        if not reset_email:
+        if not email:
             flash("Please enter your email.", "Error")
             return redirect("/")
 
@@ -162,45 +181,48 @@ def forgot():
             flash("Invalid email.", "Error")
             return redirect("/")
 
-        # Set reset code
-        global reset_code_created
+        # Set reset code and email globally
         reset_code_created = int(random() * 1000000)
+        reset_email = email
 
         # Send email
         message = Message(
-            "You are resetting password for your account at Your Home Library! Please enter the following code: " + reset_code,
+            "You are resetting password for your account at Your Home Library! Please enter the following code: " + str(reset_code_created),
             recipients=[reset_email])
         mail.send(message)
 
-        return redirect("/reset-code")
+        return '', 204
 
     else:
         return render_template("_forgot.html")
 
 
-@app.route("/reset-code")
+@app.route("/reset-code", methods=['GET', 'POST'])
 def reset_code():
     if request.method == "POST":
         # Get input
-        reset_code = request.form.get("reset-code")
+        print(request.form.get("code"))
+        code = request.form.get("code")
+        global reset_code_created
 
         # Ensure reset code was submitted correctly
-        if not reset_code or reset_code != reset_code_created:
+        if not reset_code or reset_code is not reset_code_created:
             flash("Wrong code.", "Error")
-            return redirect("/")
+            return '', 204
 
-        return redirect("/reset-pass")
+        return '', 204
 
     else:
         return render_template("_reset_code.html")
 
 
-@app.route("/reset-pass")
+@app.route("/reset-pass", methods=['GET', 'POST'])
 def reset_pass():
     if request.method == "POST":
         # Get input
         password = request.form.get("password")
         confirm = request.form.get("confirm")
+        global reset_email
 
         # Ensure password was submitted
         if not password:
@@ -225,6 +247,10 @@ def reset_pass():
             "Your password at Your Home Library has been changed! If it is not yours, reset your password by going to Log In and choosing Forgot Password",
             recipients=[reset_email])
         mail.send(message)
+
+        # Release global variables
+        reset_code_created = None
+        reset_email = None
 
         return redirect("/")
 
