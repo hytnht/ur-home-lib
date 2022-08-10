@@ -208,7 +208,7 @@ def reset_code():
         # Ensure reset code was submitted correctly
         if not reset_code or reset_code is not reset_code_created:
             flash("Wrong code.", "Error")
-            return '', 204
+            return redirect("/")
 
         return '', 204
 
