@@ -15,8 +15,9 @@
                 </div>
                 <div class="tab-content">
                     <!-- Book -->
-                    <form action="/new-book" method="post" class="needs-validation accordion tab-pane fade show active"
-                          id="book-form" autocomplete="off"
+                    <form action="/new-book" method="post" id="book-form"
+                          class="needs-validation accordion tab-pane fade show active"
+                          autocomplete="off"
                           novalidate role="tabpanel">
                         <h6 class="mb-3">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse"
@@ -206,14 +207,16 @@
                         </div>
 
                         <div class="d-flex justify-content-end">
-                            <button class="btn btn-primary me-3 insert-close" type="submit">Insert and Close</button>
-                            <button class="btn btn-secondary" type="submit">Insert and Continue
+                            <button class="btn btn-light me-3 border-primary" type="reset">Reset</button>
+                            <button class="btn btn-secondary" type="submit">Insert
                             </button>
                         </div>
                     </form>
 
                     <!-- Series -->
-                    <form class="needs-validation accordion tab-pane fade" id="series-form"
+                    <form action="/new-series" method="post" id="series-form"
+                          class="needs-validation accordion tab-pane fade"
+
                           autocomplete="off"
                           novalidate role="tabpanel">
                         <h6 class="mb-3">
@@ -268,14 +271,14 @@
                         </div>
 
                         <div class="d-flex justify-content-end">
-                            <button class="btn btn-primary me-3 insert-close" type="submit">Insert and Close</button>
-                            <button class="btn btn-secondary" type="submit">Insert and Continue
-                            </button>
+                            <button class="btn btn-light me-3 border-primary" type="reset">Reset</button>
+                            <button class="btn btn-secondary" type="submit">Insert</button>
                         </div>
                     </form>
 
                     <!-- Publish  -->
-                    <form class="needs-validation accordion tab-pane fade" id="publish-form"
+                    <form action="/new-publish" method="post" id="publish-form"
+                          class="needs-validation accordion tab-pane fade"
                           autocomplete="off"
                           novalidate role="tabpanel">
                         <h6 class="mb-3">
@@ -329,9 +332,8 @@
                         </div>
 
                         <div class="d-flex justify-content-end">
-                            <button class="btn btn-primary me-3 insert-close" type="submit">Insert and Close</button>
-                            <button class="btn btn-secondary" type="submit">Insert and Continue
-                            </button>
+                            <button class="btn btn-light me-3 border-primary" type="reset">Reset</button>
+                            <button class="btn btn-secondary" type="submit">Insert</button>
                         </div>
                     </form>
                 </div>

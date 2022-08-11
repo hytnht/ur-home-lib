@@ -137,6 +137,9 @@ footer img {
 }
 .Success {
   background-color: $success;
+  .toast-body {
+    color: $white;
+  }
 }
 
 

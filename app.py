@@ -58,9 +58,9 @@ def library():
     if len(books) > 0:
         columns = books[0].keys()
         return render_template("library.html", content="_table.html", table_head=columns, table_data=books,
-                               username=g.username)
+                               username=session["username"])
 
-    return render_template("library.html", content="_blank.html", username=g.username)
+    return render_template("library.html", content="_blank.html", username=session["username"])
 
 
 @app.route("/new-book", methods=['POST'])
@@ -73,10 +73,12 @@ def insert_book():
     if request.form.get("series"):
         # Add series if not exist
         series_id = db.execute("SELECT id FROM series WHERE title = ? AND user_id = ?", request.form.get("series"),
-                               session["user_id"])[0]["id"]
+                               session["user_id"])
         if not series_id:
             series_id = db.execute("INSERT INTO series(title, user_id) VALUES(?, ?)", request.form.get("series"),
                                    session["user_id"])
+        else:
+            series_id = series_id[0]["id"]
 
         # Update series
         series_end = db.execute("SELECT end_vol FROM series WHERE id = ?", series_id)[0]["end_vol"]
@@ -103,24 +105,46 @@ def insert_book():
         try:
             for i in range(1, int(request.form.get("volume"))):
                 if i not in avail_vol:
-                    db.execute("INSERT INTO series_missing(series_id, volume) VALUEs(?, ?)", series_id, i)
+                    db.execute("INSERT INTO series_missing(series_id, volume) VALUES(?, ?)", series_id, i)
         except:
             pass
+    else:
+        series_id = None
 
     # Add new book to database
     list_keys = [key for key in request.form.keys() if key[0:3] != "ac_" and key != "series"]
     keys = ','.join(f'"{key}"' for key in list_keys)
     values = ','.join(f'"{request.form.get(key)}"' for key in list_keys)
-    book_id = db.execute(f"INSERT INTO book({keys}, series_id, user_id) VALUES({values})", series_id,
-                         session["user_id"])
+    book_id = db.execute(f"INSERT INTO book({keys}, series_id, user_id) VALUES({values}, ?, ?)",
+                         series_id, session["user_id"])
 
     # Add accessories to book
-    list_ac_keys = [key for key in request.form.keys() if key[0:3] == "ac_"]
-    ac_keys = ','.join(f'"{key}"' for key in list_ac_keys)
-    ac_values = ','.join(f'"{request.form.get(key)}"' for key in list_ac_keys)
-    db.execute(f"INSERT INTO book({ac_keys}, book_id) VALUES({ac_values})", book_id)
+    if request.form.get("ac_type"):
+        list_ac_keys = [key for key in request.form.keys() if key[0:3] == "ac_"]
+        ac_keys = ','.join(f'"{key[3:]}"' for key in list_ac_keys)
+        ac_values = ','.join(f'"{request.form.get(key)}"' for key in list_ac_keys)
+        db.execute(f"INSERT INTO accessory({ac_keys}, book_id) VALUES({ac_values},?)", book_id)
 
-    return render_template("_insert.html")
+    flash("Book inserted.", "Success")
+    return redirect("/library")
+
+
+@app.route("/new-series", methods=['POST'])
+def insert_series():
+    # Ensure title was submitted
+    if not request.form.get("title"):
+        flash("Please enter the series' title.", "Error")
+        return '', 204
+
+    # Ensure title was not duplicate:
+    check = db.execute("SELECT * FROM series WHERE title = ?", request.form.get("title"))
+    if len(check) > 0:
+        flash("This series' title was existed.", "Error")
+
+    list_keys = [key for key in request.form.keys()]
+    keys = ','.join(f'"{key}"' for key in list_keys)
+    values = ','.join(f'"{request.form.get(key)}"' for key in list_keys)
+    db.execute(f"INSERT INTO series({keys}, user_id) VALUES({values}, ?)", session["user_id"])
 
 
 # Login functions
@@ -153,8 +177,8 @@ def login():
             return redirect("/")
 
         # Remember which user has logged in
-        g.username = email.partition("@")[0]
         session["user_id"] = user[0]["id"]
+        session["username"] = email.partition("@")[0]
 
         # Redirect user to home page
         return redirect("/library")
@@ -208,8 +232,8 @@ def register():
         mail.send(message)
 
         # Log in
-        g.username = email.partition("@")[0]
         session["user_id"] = new_user
+        session["username"] = email.partition("@")[0]
 
         return redirect("/library")
 
