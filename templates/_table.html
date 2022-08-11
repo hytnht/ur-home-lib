@@ -3,7 +3,7 @@
         <thead>
         <tr>
             {% for head in table_head %}
-                <th scope="col" data-visible="false">{{ head }}</th>
+                <th scope="col" name={{'t'~head}}>{{ head }}</th>
             {% endfor %}
         </tr>
         </thead>

@@ -19,10 +19,22 @@ Library
 
 
 {% block sub_btn %}
-<button type="button" class="btn btn-sm btn-outline-secondary me-2 px-3">
-    <i class="fa-solid fa-minus me-2"></i>
-    Show
-</button>
+<div class="dropdown">
+    <button class="btn btn-sm btn-outline-secondary me-2 px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa-solid fa-eye me-2"></i>
+        Show columns
+    </button>
+    <form name="toggle-column" onsubmit="return false" class="dropdown-menu">
+        {% for head in table_head %}
+        <div class="form-check dropdown-item px-lg-5">
+            <input class="form-check-input" type="checkbox" onclick="toggleCol(this.name)" name={{ head }} checked>
+            <label class="form-check-label">{{ head }}</label>
+        </div>
+        {% endfor %}
+
+    </form>
+</div>
+
 <button type="button" class="btn btn-sm btn-outline-secondary me-2 px-3">
     <i class="fa-solid fa-minus me-2"></i>
     Delete items
