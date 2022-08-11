@@ -9,8 +9,12 @@
                     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#series-form"
                             type="button" role="tab" aria-controls="series-form" aria-selected="false">Series
                     </button>
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#publish-form"
+                            type="button" role="tab" aria-controls="series-form" aria-selected="false">Calendar
+                    </button>
                 </div>
                 <div class="tab-content">
+                    <!-- Book -->
                     <form action="/new-book" method="post" class="needs-validation accordion tab-pane fade show active"
                           id="book-form" autocomplete="off"
                           novalidate role="tabpanel">
@@ -33,7 +37,8 @@
                             <div class="col-sm-5">
                                 <label for="isbn" class="form-label">ISBN</label>
                                 <div class="input-group">
-                                    <input type="number" class="form-control" id="isbn" name="isbn" placeholder="9780439708180">
+                                    <input type="number" class="form-control" id="isbn" name="isbn"
+                                           placeholder="9780439708180">
                                     <button class="btn btn-outline-secondary" type="button" id="button-addon2">Scan
                                     </button>
                                 </div>
@@ -41,7 +46,8 @@
 
                             <div class="col-sm-5">
                                 <label for="author" class="form-label">Author(s)</label>
-                                <input type="text" class="form-control" id="author" name="author" placeholder="J.K. Rowling" required>
+                                <input type="text" class="form-control" id="author" name="author"
+                                       placeholder="J.K. Rowling" required>
                                 <div class="invalid-feedback">
                                     Please enter the author(s).
                                 </div>
@@ -60,43 +66,45 @@
 
                             <div class="col-sm-2">
                                 <label for="volume" class="form-label">Volume</label>
-                                <input type="text" class="form-control" id="volume" placeholder="1">
+                                <input type="text" class="form-control" id="volume" name="volume" placeholder="1">
                             </div>
 
                             <div class="col-sm-6">
                                 <label for="publisher" class="form-label">Publisher</label>
-                                <input type="text" class="form-control" id="publisher" placeholder="Scholastic">
+                                <input type="text" class="form-control" id="publisher" name="publisher"
+                                       placeholder="Scholastic">
                             </div>
 
                             <div class="col-sm-3">
                                 <label for="year" class="form-label">Year</label>
-                                <input type="number" class="form-control" id="year" placeholder="1998">
+                                <input type="number" class="form-control" id="year" name="year" placeholder="1998">
                             </div>
 
                             <div class="col-sm-3">
                                 <label for="edition" class="form-label">Edition</label>
-                                <input type="text" class="form-control" id="edition" placeholder="1st edition">
+                                <input type="text" class="form-control" id="edition" name="edition"
+                                       placeholder="1st edition">
                             </div>
 
                             <div class="col-md-6">
                                 <label for="category" class="form-label">Category</label>
-                                <input class="form-control" list="category">
+                                <input class="form-control" list="category" name="category">
                                 <datalist id="category">
                                     <option></option>
                                     {% for category in categories %}
-                                        <option>{{ category }}</option>
+                                    <option>{{ category }}</option>
                                     {% endfor %}
                                 </datalist>
                             </div>
 
                             <div class="col-sm-3">
                                 <label for="page" class="form-label">Pages</label>
-                                <input type="number" class="form-control" id="page" placeholder="309">
+                                <input type="number" class="form-control" id="page" name="page" placeholder="309">
                             </div>
 
                             <div class="col-sm-3">
                                 <label for="price" class="form-label">Price</label>
-                                <input type="number" class="form-control" id="price" placeholder="$6.98">
+                                <input type="number" class="form-control" id="price" name="price" placeholder="$6.98">
                             </div>
                         </div>
 
@@ -109,37 +117,41 @@
                         <div class="row g-3 mt-0 accordion-collapse collapse show" id="more">
                             <div class="col-sm-3">
                                 <label for="country" class="form-label">Country</label>
-                                <input type="text" class="form-control" id="country" placeholder="UK">
+                                <input type="text" class="form-control" id="country" name="country" placeholder="UK">
                             </div>
 
                             <div class="col-sm-3">
                                 <label for="originLang" class="form-label">Original Language</label>
-                                <input type="text" class="form-control" id="originLang" placeholder="English">
+                                <input type="text" class="form-control" id="originLang" name="origin_lang"
+                                       placeholder="English">
                             </div>
 
                             <div class="col-sm-3">
                                 <label for="transLang" class="form-label">Translated Language</label>
-                                <input type="text" class="form-control" id="transLang" placeholder="Original language">
+                                <input type="text" class="form-control" id="transLang" name="translated_lang"
+                                       placeholder="Original language">
                             </div>
 
                             <div class="col-sm-3">
                                 <label for="cover" class="form-label">Cover</label>
-                                <input type="text" class="form-control" id="cover" placeholder="Paperback">
+                                <input type="text" class="form-control" id="cover" name="cover" placeholder="Paperback">
                             </div>
 
                             <div class="col-sm-2">
                                 <label for="ratings" class="form-label">My Ratings</label>
-                                <input type="number" class="form-control" id="ratings" placeholder="4.5">
+                                <input type="number" class="form-control" id="ratings" name="my_ratings"
+                                       placeholder="4.5">
                             </div>
 
                             <div class="col-sm-5">
                                 <label for="status" class="form-label">Status</label>
-                                <input type="text" class="form-control" id="status" placeholder="New">
+                                <input type="text" class="form-control" id="status" name="status" placeholder="New">
                             </div>
 
                             <div class="col-sm-5">
                                 <label for="note" class="form-label">Note</label>
-                                <input type="text" class="form-control" id="note" placeholder="A gift from mom">
+                                <input type="text" class="form-control" id="note" name="note"
+                                       placeholder="A gift from mom">
                             </div>
                         </div>
 
@@ -154,23 +166,25 @@
 
                             <div class="col-sm-5">
                                 <label for="ac_type" class="form-label">Type</label>
-                                <input type="text" class="form-control" id="ac_type"
+                                <input type="text" class="form-control" id="ac_type" name="ac_type"
                                        placeholder="Bookmark">
                             </div>
 
                             <div class="col-sm-1">
                                 <label for="ac_qty" class="form-label">Qty</label>
-                                <input type="number" class="form-control" id="ac_qty" placeholder="1">
+                                <input type="number" class="form-control" id="ac_qty" name="ac_qty" placeholder="1">
                             </div>
 
                             <div class="col-sm-3">
                                 <label for="ac_material" class="form-label">Material</label>
-                                <input type="text" class="form-control" id="ac_material" placeholder="Ivory">
+                                <input type="text" class="form-control" id="ac_material" name="ac_material"
+                                       placeholder="Ivory">
                             </div>
 
                             <div class="col-sm-3">
                                 <label for="ac_status" class="form-label">Status</label>
-                                <input type="text" class="form-control" id="ac_status" placeholder="Faded">
+                                <input type="text" class="form-control" id="ac_status" name="ac_status"
+                                       placeholder="Faded">
                             </div>
                         </div>
 
@@ -185,18 +199,20 @@
                             <div class="my-3">
                                 <div class="col-sm-6">
                                     <label for="{{ column }}" class="form-label">{{ column }}</label>
-                                    <input type="text" class="form-control" id="{{ column }}">
+                                    <input type="text" class="form-control" id="{{ column }}" name="{{ column }}">
                                 </div>
                             </div>
                             {% endfor %}
                         </div>
 
                         <div class="d-flex justify-content-end">
-                            <button class="btn btn-primary me-3" type="submit" id="insert_close">Insert and Close</button>
-                            <button class="btn btn-secondary" type="submit">Insert and Continue</button>
+                            <button class="btn btn-primary me-3 insert-close" type="submit">Insert and Close</button>
+                            <button class="btn btn-secondary" type="submit">Insert and Continue
+                            </button>
                         </div>
                     </form>
 
+                    <!-- Series -->
                     <form class="needs-validation accordion tab-pane fade" id="series-form"
                           autocomplete="off"
                           novalidate role="tabpanel">
@@ -209,7 +225,8 @@
                         <div class="row g-3 accordion-collapse collapse show" id="series_detail">
                             <div class="col-md-7">
                                 <label for="title" class="form-label">Name</label>
-                                <input type="text" class="form-control" id="sr_name" placeholder="Harry Potter"
+                                <input type="text" class="form-control" id="sr_name" name="title"
+                                       placeholder="Harry Potter"
                                        Required>
                                 <div class="invalid-feedback">
                                     Please enter the series' title.
@@ -218,7 +235,7 @@
 
                             <div class="col-md-3">
                                 <label for="sr_status" class="form-label">Status</label>
-                                <select class="form-select" id="sr_status">
+                                <select class="form-select" id="sr_status" name="status">
                                     <option></option>
                                     <option value="End">End</option>
                                     <option value="Hiatus">Hiatus</option>
@@ -229,7 +246,7 @@
 
                             <div class="col-sm-2">
                                 <label for="sr_end" class="form-label">End Volume</label>
-                                <input type="number" class="form-control" id="sr_end" placeholder="7">
+                                <input type="number" class="form-control" id="sr_end" name="end_vol" placeholder="7">
                             </div>
                         </div>
 
@@ -251,11 +268,72 @@
                         </div>
 
                         <div class="d-flex justify-content-end">
-                            <button class="btn btn-primary me-3" type="submit">Insert and Close</button>
-                            <button class="btn btn-secondary" type="submit">Insert and Continue</button>
+                            <button class="btn btn-primary me-3 insert-close" type="submit">Insert and Close</button>
+                            <button class="btn btn-secondary" type="submit">Insert and Continue
+                            </button>
                         </div>
                     </form>
 
+                    <!-- Publish  -->
+                    <form class="needs-validation accordion tab-pane fade" id="publish-form"
+                          autocomplete="off"
+                          novalidate role="tabpanel">
+                        <h6 class="mb-3">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#publish_detail" aria-expanded="true"
+                                    aria-controls="publish_detail">Publish Date
+                            </button>
+                        </h6>
+                        <div class="row g-3 accordion-collapse collapse show" id="publish_detail">
+                            <div class="col-md-4">
+                                <label for="title" class="form-label">Date</label>
+                                <input type="datetime-local" class="form-control" id="pb_date" name="date"
+                                       Required>
+                                <div class="invalid-feedback">
+                                    Please enter the release date.
+                                </div>
+                            </div>
+
+                            <div class="col-sm-7">
+                                <label for="pb_series" class="form-label">Series</label>
+                                <input class="form-control" list="series-list" name="series" id="pb_series">
+                                <datalist>
+                                    <option></option>
+                                    {% for sr_title in series %}
+                                    <option>{{ sr_title }}</option>
+                                    {% endfor %}
+                                </datalist>
+                            </div>
+
+                            <div class="col-sm-1">
+                                <label for="pb_vol" class="form-label">Volume</label>
+                                <input type="number" class="form-control" id="pb_vol" name="volume" placeholder="7">
+                            </div>
+                        </div>
+
+                        <h6 class="mb-3 mt-3">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#pb_user_custom" aria-expanded="true"
+                                    aria-controls="pb_user_custom">User Custom
+                            </button>
+                        </h6>
+                        <div class="row g-3 mt-0 accordion-collapse collapse show" id="pb_user_custom">
+                            {% for pb_column in pb_custom %}
+                            <div class="my-3">
+                                <div class="col-sm-6">
+                                    <label for="{{ pb_column }}" class="form-label">{{ pb_column }}</label>
+                                    <input type="text" class="form-control" id="{{ pb_column }}">
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-primary me-3 insert-close" type="submit">Insert and Close</button>
+                            <button class="btn btn-secondary" type="submit">Insert and Continue
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

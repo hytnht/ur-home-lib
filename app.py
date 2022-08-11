@@ -4,7 +4,7 @@ import env
 from random import random
 from datetime import datetime
 from cs50 import SQL
-from flask import Flask, redirect, render_template, request, session, flash
+from flask import Flask, redirect, render_template, request, session, flash, g
 from flask_mail import Mail, Message
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -29,14 +29,10 @@ Session(app)
 # Connect database
 db = SQL("sqlite:///database.db")
 
+
 # # Make sure API key is set
 # if not os.environ.get("API_KEY"):
 #     raise RuntimeError("API_KEY not set")
-
-# Global variables
-reset_email = None
-reset_code_created = None
-username = None
 
 
 @app.after_request
@@ -62,25 +58,69 @@ def library():
     if len(books) > 0:
         columns = books[0].keys()
         return render_template("library.html", content="_table.html", table_head=columns, table_data=books,
-                               username=username)
+                               username=g.username)
 
-    return render_template("library.html", content="_blank.html", username=username)
+    return render_template("library.html", content="_blank.html", username=g.username)
 
-@app.route("/new-book", methods='POST')
+
+@app.route("/new-book", methods=['POST'])
 def insert_book():
-    # Get input
-    new_book = request.form
+    # Ensure title was submitted
+    if not request.form.get("title"):
+        flash("Please enter the book's title.", "Error")
+        return '', 204
 
-    # Query database
-    series = [title["title"] for title in db.execute("SELECT title FROM series")]
+    if request.form.get("series"):
+        # Add series if not exist
+        series_id = db.execute("SELECT id FROM series WHERE title = ? AND user_id = ?", request.form.get("series"),
+                               session["user_id"])[0]["id"]
+        if not series_id:
+            series_id = db.execute("INSERT INTO series(title, user_id) VALUES(?, ?)", request.form.get("series"),
+                                   session["user_id"])
 
-    # Add series if not exist
-    if not new_book.get("series") in series:
-        db.execute("INSERT INTO serie(title) VALUE ?", new_book.get("series"))
+        # Update series
+        series_end = db.execute("SELECT end_vol FROM series WHERE id = ?", series_id)[0]["end_vol"]
+        series_missing = db.execute("SELECT id, volume FROM series_missing WHERE series_id = ? ORDER BY volume",
+                                    series_id)
+        series_avail = db.execute("SELECT volume FROM book WHERE series_id = ? ORDER BY volume", series_id)
+
+        # Update series status
+        if request.form.get("volume") == series_end:
+            db.execute("UPDATE series SET status = ? WHERE series_id = ?", "End", series_id)
+
+        avail_vol = []
+        missing_vol = []
+        for row in series_missing:
+            missing_vol.append(row["volume"])
+        for row in series_avail:
+            avail_vol.append(row["volume"])
+
+        # Delete missing volume
+        if request.form.get("volume") in missing_vol:
+            db.execute("DELETE FROM series_missing WHERE id = ?", row["id"])
+
+        # Update missing volumes, only if volume is an integer
+        try:
+            for i in range(1, int(request.form.get("volume"))):
+                if i not in avail_vol:
+                    db.execute("INSERT INTO series_missing(series_id, volume) VALUEs(?, ?)", series_id, i)
+        except:
+            pass
 
     # Add new book to database
-    db.execute("INSERT INTO ")
+    list_keys = [key for key in request.form.keys() if key[0:3] != "ac_" and key != "series"]
+    keys = ','.join(f'"{key}"' for key in list_keys)
+    values = ','.join(f'"{request.form.get(key)}"' for key in list_keys)
+    book_id = db.execute(f"INSERT INTO book({keys}, series_id, user_id) VALUES({values})", series_id,
+                         session["user_id"])
 
+    # Add accessories to book
+    list_ac_keys = [key for key in request.form.keys() if key[0:3] == "ac_"]
+    ac_keys = ','.join(f'"{key}"' for key in list_ac_keys)
+    ac_values = ','.join(f'"{request.form.get(key)}"' for key in list_ac_keys)
+    db.execute(f"INSERT INTO book({ac_keys}, book_id) VALUES({ac_values})", book_id)
+
+    return render_template("_insert.html")
 
 
 # Login functions
@@ -107,14 +147,13 @@ def login():
         # Query database for email
         user = db.execute("SELECT * FROM user WHERE email = ?", email)
 
-        # Ensure username exists and password is correct
+        # Ensure email exists and password is correct
         if len(user) != 1 or not check_password_hash(user[0]["password"], password):
-            flash("Invalid username and/or password", "Error")
+            flash("Invalid email and/or password", "Error")
             return redirect("/")
 
         # Remember which user has logged in
-        global username
-        username = email.partition("@")[0]
+        g.username = email.partition("@")[0]
         session["user_id"] = user[0]["id"]
 
         # Redirect user to home page
@@ -135,7 +174,7 @@ def register():
         # Query database
         check = db.execute("SELECT * FROM user WHERE email = ?", email)
 
-        # Ensure username was submitted
+        # Ensure email was submitted
         if not email:
             flash("Please enter your email.", "Error")
             return redirect("/")
@@ -155,8 +194,8 @@ def register():
             flash("Two passwords are not the same.", "Error")
             return redirect("/")
 
-        # Ensure username was not duplicated
-        if len(check) != 0:
+        # Ensure email was not duplicated
+        if len(check) > 0:
             flash("Email already exists.", "Error")
             return redirect("/")
 
@@ -169,8 +208,7 @@ def register():
         mail.send(message)
 
         # Log in
-        global username
-        username = email.partition("@")[0]
+        g.username = email.partition("@")[0]
         session["user_id"] = new_user
 
         return redirect("/library")
@@ -184,31 +222,29 @@ def forgot():
     if request.method == "POST":
         # Get input
         email = request.form.get("email")
-        global reset_code_created
-        global reset_email
 
         # Query database
         check = db.execute("SELECT email FROM user WHERE email = ?", email)
 
-        # Ensure username was submitted
+        # Ensure email was submitted
         if not email:
             flash("Please enter your email.", "Error")
             return redirect("/")
 
-        # Ensure username was existed
+        # Ensure email was existed
         if len(check) == 0:
             flash("Invalid email.", "Error")
             return redirect("/")
 
         # Set reset code and email globally
-        reset_code_created = str(random() * 1000000)[-6:]
-        reset_email = email
+        g.reset_code_created = str(random() * 1000000)[-6:]
+        g.reset_email = email
 
         # Send email
         message = Message(
             "You are resetting password for your account at Your Home Library! Please enter the following code: "
-            + str(reset_code_created),
-            recipients=[reset_email])
+            + str(g.reset_code_created),
+            recipients=[g.reset_email])
         mail.send(message)
 
         return '', 204
@@ -221,15 +257,10 @@ def forgot():
 def reset_code():
     if request.method == "POST":
         # Get input
-        print(request.form.get("code"))
         code = request.form.get("code")
-        global reset_code_created
-        print(reset_code_created)
-        print(type(reset_code_created))
-        print(code)
-        print(type(code))
+
         # Ensure reset code was submitted correctly
-        if not code or code != reset_code_created:
+        if not code or code != g.reset_code_created:
             flash("Wrong code.", "Error")
             return redirect("/")
 
@@ -245,7 +276,6 @@ def reset_pass():
         # Get input
         password = request.form.get("password")
         confirm = request.form.get("confirm")
-        global reset_email
 
         # Ensure password was submitted
         if not password:
@@ -263,17 +293,17 @@ def reset_pass():
             return redirect("/")
 
         # Change database
-        db.execute("UPDATE user SET password = ? WHERE email = ?", generate_password_hash(password), reset_email)
+        db.execute("UPDATE user SET password = ? WHERE email = ?", generate_password_hash(password), g.reset_email)
 
         # Send email
         message = Message(
             "Your password at Your Home Library has been changed! If it is not yours, reset your password by going to Log In and choosing Forgot Password",
-            recipients=[reset_email])
+            recipients=[g.reset_email])
         mail.send(message)
 
         # Release global variables
-        reset_code_created = None
-        reset_email = None
+        g.reset_code_created = None
+        g.reset_email = None
 
         return redirect("/")
 

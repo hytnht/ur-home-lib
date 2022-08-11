@@ -1,11 +1,24 @@
-<div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="toast-header">
-        <img src="..." class="rounded me-2" alt="...">
-        <strong class="me-auto">{{ toast_title }}</strong>
-        <small class="text-muted">{{ toast_time }}</small>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="toast show {{ category }}">
+    <div class="toast-header show showing">
+        <strong class="me-auto">{{ category }}</strong>
         <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
     <div class="toast-body">
-        {{ toast_message }}
+        {% if category == "Warning" %}
+            {% set msg, route = message.split("|") %}
+                {{ msg }}
+                <form action="/{{ route }}" method="post">
+                    <input type="button" value="Yes" class="btn">
+                </form>
+                <button type="button" class="btn-close" data-bs-dismiss="toast">No</button>
+        {% else %}
+            {{ message }}
+        {% endif %}
     </div>
 </div>
+{% endfor %}
+{% endif %}
+{% endwith %}
