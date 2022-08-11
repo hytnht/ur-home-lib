@@ -9,4 +9,5 @@ venv/
 *.sqlite
 *.pptx
 *.env
+*.db
 env.py

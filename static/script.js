@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-
+    document.querySelector("#insert_close").addEventListener("click", function() {
+        document.querySelector("#insert-modal").classList.remove("show");
+    })
 })
 // Change login modal
 let modal = document.querySelector("#modal-template");

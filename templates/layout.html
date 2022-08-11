@@ -19,7 +19,7 @@
 
 <!-- Header -->
 <header class="navbar navbar-light bg-light sticky-top flex-md-nowrap p-0 shadow">
-<!--    Logo-->
+    <!--    Logo-->
     <div class="d-flex">
         <button class="navbar-toggler d-md-none collapsed" type="button" data-bs-toggle="collapse"
                 data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
@@ -31,7 +31,7 @@
     </div>
 
     <ul class="nav nav-pills">
-<!--        Notification-->
+        <!--        Notification-->
         <li class="nav-item dropdown me-5">
             <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
                aria-expanded="false"><i class="fa-solid fa-bell"></i></a>
@@ -40,7 +40,7 @@
             </ul>
         </li>
 
-<!--        User-->
+        <!--        User-->
         <li class="nav-item dropdown me-5">
             <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Hi,
                 {{ username }}!</a>
@@ -59,7 +59,7 @@
 
 <div class="container-fluid">
     <div class="row">
-<!--        Sidebar-->
+        <!--        Sidebar-->
         <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-primary sidebar collapse">
             <div class="position-sticky pt-3">
                 <ul class="nav flex-column">
@@ -96,16 +96,19 @@
                 </ul>
                 <hr class="divider">
 
-<!--                Actions-->
+                <!--                Actions-->
                 <ul id="actions" class="nav flex-column mb-2">
                     {% block actions %}{% endblock actions %}
                 </ul>
             </div>
         </nav>
 
+        <!--       Modal-->
+        {% include '_insert.html' %}
+
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-<!--            Buttons-->
+            <!--            Buttons-->
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">{{ self.title() }}</h1>
                 <div class="btn-toolbar mb-2 mb-md-0" id="sub-btn">
@@ -113,7 +116,7 @@
                 </div>
             </div>
 
-<!--            Content-->
+            <!--            Content-->
             {% block content %}{% endblock content %}
         </main>
     </div>

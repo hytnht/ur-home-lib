@@ -5,16 +5,16 @@ Library
 {% endblock title %}
 
 {% block actions %}
-    <li class="nav-item">
-        <a class="nav-link" href="#">
-            Insert
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#">
-            Mass upload
-        </a>
-    </li>
+<li class="nav-item">
+    <a class="nav-link" href="#">
+        Insert
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="#">
+        Mass upload
+    </a>
+</li>
 {% endblock actions %}
 
 
@@ -24,14 +24,15 @@ Library
         Delete items
     </button>
 
-    <button type="button" class="btn btn-sm btn-outline-secondary me-2 px-3">
+    <button type="button" class="btn btn-sm btn-outline-secondary me-2 px-3" data-bs-toggle="modal"
+    data-bs-target="#insert-modal">
         <i class="fa-solid fa-plus me-2"></i>
         Insert column
     </button>
 {% endblock sub_btn %}
 
 {% block content %}
-    {% include '%s' % content %}
+{% include '%s' % content %}
 {% endblock content %}
 
 

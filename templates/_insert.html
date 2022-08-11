@@ -1,0 +1,263 @@
+<div class="modal fade" tabindex="-1" id="insert-modal">
+    <div class="modal-dialog" id="modal-template">
+        <div class="modal-content rounded-5 shadow px-5" id="login">
+            <div class="container my-5">
+                <div class="nav nav-tabs nav-pills mb-3" id="nav-tab" role="tablist">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#book-form"
+                            type="button" role="tab" aria-controls="book-form" aria-selected="true">Book
+                    </button>
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#series-form"
+                            type="button" role="tab" aria-controls="series-form" aria-selected="false">Series
+                    </button>
+                </div>
+                <div class="tab-content">
+                    <form action="/new-book" method="post" class="needs-validation accordion tab-pane fade show active"
+                          id="book-form" autocomplete="off"
+                          novalidate role="tabpanel">
+                        <h6 class="mb-3">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#main" aria-expanded="true"
+                                    aria-controls="main">Main
+                            </button>
+                        </h6>
+                        <div class="row g-3 accordion-collapse collapse show" id="main">
+                            <div class="col-7">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" name="title"
+                                       placeholder="Harry Potter and the Sorcerer's Stone" Required>
+                                <div class="invalid-feedback">
+                                    Please enter the book's title.
+                                </div>
+                            </div>
+
+                            <div class="col-sm-5">
+                                <label for="isbn" class="form-label">ISBN</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="isbn" name="isbn" placeholder="9780439708180">
+                                    <button class="btn btn-outline-secondary" type="button" id="button-addon2">Scan
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-5">
+                                <label for="author" class="form-label">Author(s)</label>
+                                <input type="text" class="form-control" id="author" name="author" placeholder="J.K. Rowling" required>
+                                <div class="invalid-feedback">
+                                    Please enter the author(s).
+                                </div>
+                            </div>
+
+                            <div class="col-sm-5">
+                                <label for="series" class="form-label">Series</label>
+                                <input class="form-control" list="series-list" name="series" id="series">
+                                <datalist id="series-list">
+                                    <option></option>
+                                    {% for sr_title in series %}
+                                    <option>{{ sr_title }}</option>
+                                    {% endfor %}
+                                </datalist>
+                            </div>
+
+                            <div class="col-sm-2">
+                                <label for="volume" class="form-label">Volume</label>
+                                <input type="text" class="form-control" id="volume" placeholder="1">
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label for="publisher" class="form-label">Publisher</label>
+                                <input type="text" class="form-control" id="publisher" placeholder="Scholastic">
+                            </div>
+
+                            <div class="col-sm-3">
+                                <label for="year" class="form-label">Year</label>
+                                <input type="number" class="form-control" id="year" placeholder="1998">
+                            </div>
+
+                            <div class="col-sm-3">
+                                <label for="edition" class="form-label">Edition</label>
+                                <input type="text" class="form-control" id="edition" placeholder="1st edition">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="category" class="form-label">Category</label>
+                                <input class="form-control" list="category">
+                                <datalist id="category">
+                                    <option></option>
+                                    {% for category in categories %}
+                                        <option>{{ category }}</option>
+                                    {% endfor %}
+                                </datalist>
+                            </div>
+
+                            <div class="col-sm-3">
+                                <label for="page" class="form-label">Pages</label>
+                                <input type="number" class="form-control" id="page" placeholder="309">
+                            </div>
+
+                            <div class="col-sm-3">
+                                <label for="price" class="form-label">Price</label>
+                                <input type="number" class="form-control" id="price" placeholder="$6.98">
+                            </div>
+                        </div>
+
+                        <h6 class="mb-3 mt-3">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#more" aria-expanded="true"
+                                    aria-controls="more">More Details
+                            </button>
+                        </h6>
+                        <div class="row g-3 mt-0 accordion-collapse collapse show" id="more">
+                            <div class="col-sm-3">
+                                <label for="country" class="form-label">Country</label>
+                                <input type="text" class="form-control" id="country" placeholder="UK">
+                            </div>
+
+                            <div class="col-sm-3">
+                                <label for="originLang" class="form-label">Original Language</label>
+                                <input type="text" class="form-control" id="originLang" placeholder="English">
+                            </div>
+
+                            <div class="col-sm-3">
+                                <label for="transLang" class="form-label">Translated Language</label>
+                                <input type="text" class="form-control" id="transLang" placeholder="Original language">
+                            </div>
+
+                            <div class="col-sm-3">
+                                <label for="cover" class="form-label">Cover</label>
+                                <input type="text" class="form-control" id="cover" placeholder="Paperback">
+                            </div>
+
+                            <div class="col-sm-2">
+                                <label for="ratings" class="form-label">My Ratings</label>
+                                <input type="number" class="form-control" id="ratings" placeholder="4.5">
+                            </div>
+
+                            <div class="col-sm-5">
+                                <label for="status" class="form-label">Status</label>
+                                <input type="text" class="form-control" id="status" placeholder="New">
+                            </div>
+
+                            <div class="col-sm-5">
+                                <label for="note" class="form-label">Note</label>
+                                <input type="text" class="form-control" id="note" placeholder="A gift from mom">
+                            </div>
+                        </div>
+
+
+                        <h6 class="mb-3 mt-3">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#accessories" aria-expanded="true"
+                                    aria-controls="accessories">Accessories
+                            </button>
+                        </h6>
+                        <div class="row g-3 mt-0 accordion-collapse collapse show" id="accessories">
+
+                            <div class="col-sm-5">
+                                <label for="ac_type" class="form-label">Type</label>
+                                <input type="text" class="form-control" id="ac_type"
+                                       placeholder="Bookmark">
+                            </div>
+
+                            <div class="col-sm-1">
+                                <label for="ac_qty" class="form-label">Qty</label>
+                                <input type="number" class="form-control" id="ac_qty" placeholder="1">
+                            </div>
+
+                            <div class="col-sm-3">
+                                <label for="ac_material" class="form-label">Material</label>
+                                <input type="text" class="form-control" id="ac_material" placeholder="Ivory">
+                            </div>
+
+                            <div class="col-sm-3">
+                                <label for="ac_status" class="form-label">Status</label>
+                                <input type="text" class="form-control" id="ac_status" placeholder="Faded">
+                            </div>
+                        </div>
+
+                        <h6 class="mb-3 mt-3">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#user_custom" aria-expanded="true"
+                                    aria-controls="user_custom">User Custom
+                            </button>
+                        </h6>
+                        <div class="row g-3 mt-0 accordion-collapse collapse show" id="user_custom">
+                            {% for column in custom %}
+                            <div class="my-3">
+                                <div class="col-sm-6">
+                                    <label for="{{ column }}" class="form-label">{{ column }}</label>
+                                    <input type="text" class="form-control" id="{{ column }}">
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-primary me-3" type="submit" id="insert_close">Insert and Close</button>
+                            <button class="btn btn-secondary" type="submit">Insert and Continue</button>
+                        </div>
+                    </form>
+
+                    <form class="needs-validation accordion tab-pane fade" id="series-form"
+                          autocomplete="off"
+                          novalidate role="tabpanel">
+                        <h6 class="mb-3">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#series_detail" aria-expanded="true"
+                                    aria-controls="series_detail">Details
+                            </button>
+                        </h6>
+                        <div class="row g-3 accordion-collapse collapse show" id="series_detail">
+                            <div class="col-md-7">
+                                <label for="title" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="sr_name" placeholder="Harry Potter"
+                                       Required>
+                                <div class="invalid-feedback">
+                                    Please enter the series' title.
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="sr_status" class="form-label">Status</label>
+                                <select class="form-select" id="sr_status">
+                                    <option></option>
+                                    <option value="End">End</option>
+                                    <option value="Hiatus">Hiatus</option>
+                                    <option value="Ongoing">Ongoing</option>
+                                    <option value="Drop">Drop</option>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-2">
+                                <label for="sr_end" class="form-label">End Volume</label>
+                                <input type="number" class="form-control" id="sr_end" placeholder="7">
+                            </div>
+                        </div>
+
+                        <h6 class="mb-3 mt-3">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#sr_user_custom" aria-expanded="true"
+                                    aria-controls="sr_user_custom">User Custom
+                            </button>
+                        </h6>
+                        <div class="row g-3 mt-0 accordion-collapse collapse show" id="sr_user_custom">
+                            {% for sr_column in sr_custom %}
+                            <div class="my-3">
+                                <div class="col-sm-6">
+                                    <label for="{{ sr_column }}" class="form-label">{{ sr_column }}</label>
+                                    <input type="text" class="form-control" id="{{ sr_column }}">
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-primary me-3" type="submit">Insert and Close</button>
+                            <button class="btn btn-secondary" type="submit">Insert and Continue</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

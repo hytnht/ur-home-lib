@@ -1,6 +1,8 @@
 import os
 import env
+
 from random import random
+from datetime import datetime
 from cs50 import SQL
 from flask import Flask, redirect, render_template, request, session, flash
 from flask_mail import Mail, Message
@@ -64,7 +66,24 @@ def library():
 
     return render_template("library.html", content="_blank.html", username=username)
 
+@app.route("/new-book", methods='POST')
+def insert_book():
+    # Get input
+    new_book = request.form
 
+    # Query database
+    series = [title["title"] for title in db.execute("SELECT title FROM series")]
+
+    # Add series if not exist
+    if not new_book.get("series") in series:
+        db.execute("INSERT INTO serie(title) VALUE ?", new_book.get("series"))
+
+    # Add new book to database
+    db.execute("INSERT INTO ")
+
+
+
+# Login functions
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
@@ -142,8 +161,8 @@ def register():
             return redirect("/")
 
         # Insert new user to database
-        new_user = db.execute("INSERT INTO user (email, password) VALUES(?, ?)", email,
-                              generate_password_hash(password))
+        new_user = db.execute("INSERT INTO user (email, password, date) VALUES(?, ?)", email,
+                              generate_password_hash(password), datetime.now())
 
         # Send email
         message = Message("You are registered to Your Home Library!", recipients=[email])
@@ -182,12 +201,13 @@ def forgot():
             return redirect("/")
 
         # Set reset code and email globally
-        reset_code_created = int(random() * 1000000)
+        reset_code_created = str(random() * 1000000)[-6:]
         reset_email = email
 
         # Send email
         message = Message(
-            "You are resetting password for your account at Your Home Library! Please enter the following code: " + str(reset_code_created),
+            "You are resetting password for your account at Your Home Library! Please enter the following code: "
+            + str(reset_code_created),
             recipients=[reset_email])
         mail.send(message)
 
@@ -204,9 +224,12 @@ def reset_code():
         print(request.form.get("code"))
         code = request.form.get("code")
         global reset_code_created
-
+        print(reset_code_created)
+        print(type(reset_code_created))
+        print(code)
+        print(type(code))
         # Ensure reset code was submitted correctly
-        if not reset_code or reset_code is not reset_code_created:
+        if not code or code != reset_code_created:
             flash("Wrong code.", "Error")
             return redirect("/")
 

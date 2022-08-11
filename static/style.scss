@@ -112,13 +112,28 @@ footer img {
   color: $light;
 }
 
-
 /* Modal */
 .modal-link {
   font-size: .85rem;
+}
+@media (min-width: 576px) {
+  #insert-modal .modal-dialog {
+    max-width: 80%;
+  }
+}
+.accordion-button {
+  font-weight: bold;
+}
+.accordion-button:not(.collapsed) {
+  background-color: $white;
+}
+.nav-tabs {
+  padding-left: 0;
 }
 
 /* Toast */
 .Error {
   background-color: $warning;
 }
+
+
