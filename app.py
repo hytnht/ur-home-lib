@@ -1,5 +1,6 @@
 import os
 import env
+import csv
 
 from random import random
 from datetime import datetime
@@ -180,17 +181,19 @@ def insert_date():
 
     flash("Release date inserted.", "Success")
     return redirect("/calendar")
+
+
 # </editor-fold>
 
 
 # <editor-fold desc="Delete functions">
 @app.route("/delete-book", methods=['POST'])
 def delete_book():
-    ids = ','.join(f'"{key}"' for key in request.form.keys())
-
-    for id in ids:
+    print(request.form.keys())
+    for id in request.form.keys():
+        print(id)
         # Retrieve book information
-        series_id = db.execute("SELECT series_id FROM book WHERE id ?", id)
+        series_id = db.execute("SELECT series_id FROM book WHERE id = ?", id)
         if not series_id:
             break
         else:
@@ -212,14 +215,19 @@ def delete_book():
         for row in series_avail:
             avail_vol.append(row["volume"])
 
+        next_current = 0
         # Update series
         if volume == series_current:
-            db.execute("UPDATE series SET current = ? WHERE series_id = ?", avail_vol[-2], series_id)
+            if len(avail_vol) > 2:
+                next_current = avail_vol[-2]
+            db.execute("UPDATE series SET current = ? WHERE series_id = ?", next_current, series_id)
 
         # Delete missing volume
         for row in series_missing:
-            if avail_vol[-2] < row["volume"] < int(volume):
+            if next_current < row["volume"] < int(volume):
                 db.execute("DELETE FROM series_missing WHERE id = ?", row["id"])
+
+    ids = ','.join(f'"{key}"' for key in request.form.keys())
 
     # Delete from accessory table
     db.execute(f"DELETE FROM accessory WHERE book_id IN ({ids})")
