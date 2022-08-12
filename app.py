@@ -152,6 +152,34 @@ def insert_series():
     return redirect("/series")
 
 
+@app.route("/new-date", methods=['POST'])
+def insert_date():
+    # Ensure series title was submitted
+    if not request.form.get("series"):
+        flash("Please enter the series' title.", "Error")
+        return '', 204
+
+    # Ensure date was submitted
+    if not request.form.get("date"):
+        flash("Please enter the date", "Error")
+        return '', 204
+
+    # Add series if not exist
+    series_id = db.execute("SELECT id FROM series WHERE title = ? AND user_id = ?", request.form.get("series"),
+                           session["user_id"])
+    if not series_id:
+        series_id = db.execute("INSERT INTO series(title, user_id) VALUES(?, ?)", request.form.get("series"),
+                               session["user_id"])
+    else:
+        series_id = series_id[0]["id"]
+
+    list_keys =[key for key in request.form.keys()if key != "series"]
+    keys = ','.join(f'"{key}"' for key in list_keys)
+    values = ','.join(f'"{request.form.get(key)}"' for key in list_keys)
+    db.execute(f"INSERT INTO release_calendar({keys}, series_id) VALUES({values}, ?)", series_id)
+
+    flash("Release date inserted.", "Success")
+    return redirect("/calendar")
 # </editor-fold>
 
 
