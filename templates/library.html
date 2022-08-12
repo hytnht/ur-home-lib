@@ -33,7 +33,8 @@ Library
         <hr class="m-0">
         {% for head in table_head %}
         <div class="form-check dropdown-item px-lg-5">
-            <input name={{'bt-'~head}} class="form-check-input c-col" type="checkbox" onclick="toggle(this.name,'table-cell')"
+            <input name={{'bt-'~head}} class="form-check-input c-col" type="checkbox"
+                   onclick="toggle(this.name,'table-cell')"
                    checked>
             <label class="form-check-label">{{ head }}</label>
         </div>
@@ -42,7 +43,10 @@ Library
 </div>
 
 <!--Delete-->
-<button action="/delete-book" type="button" class="btn btn-sm btn-outline-secondary me-2 px-3">
+<button action="/delete-book" form="delete-book"
+        onclick="return confirm('Delete book will delete its accessories too. Do you really want to delete?')"
+        type="submit"
+        class="btn btn-sm btn-outline-secondary me-2 px-3">
     <i class="fa-solid fa-minus me-2"></i>
     Delete
 </button>
@@ -56,7 +60,35 @@ Library
 {% endblock sub_btn %}
 
 {% block content %}
-{% include '%s' % content %}
+<!--{% include '%s' % content %}-->
+<div class="table-responsive">
+    <table class="table table-striped table-sm">
+        <thead>
+        <tr>
+            <th>
+                <input class="d-table-cell" type="checkbox" onclick="checkAll(this)" name="row" checked>
+            </th>
+            {% for head in table_head %}
+            <th scope="col" name={{'t-'~head}}>{{ head }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        <form action="/delete-book" method="post" id="delete-book">
+            {% for data in table_data %}
+            <tr>
+                <td>
+                    <input class="d-table-cell c-row" type="checkbox" name={{data["id"]}}>
+                </td>
+                {% for head in table_head %}
+                <td name={{'t-'~head}}>{{ data[head] }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </form>
+        </tbody>
+    </table>
+</div>
 {% endblock content %}
 
 

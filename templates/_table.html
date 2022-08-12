@@ -11,16 +11,18 @@
         </tr>
         </thead>
         <tbody>
-            {% for data in table_data %}
-                <tr>
-                    <td>
-                        <input class="d-table-cell c-row" type="checkbox" value={{data["id"]}}>
-                    </td>
-                    {% for head in table_head %}
-                        <td name={{'t-'~head}}>{{ data[head] }}</td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
+            <form action="/delete-book" method="post" id="delete-book">
+                {% for data in table_data %}
+                    <tr>
+                        <td>
+                            <input class="d-table-cell c-row" type="checkbox" value={{data["id"]}}>
+                        </td>
+                        {% for head in table_head %}
+                            <td name={{'t-'~head}}>{{ data[head] }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </form>
         </tbody>
     </table>
 </div>

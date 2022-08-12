@@ -62,6 +62,8 @@ def library():
                                username=session["username"])
 
     return render_template("library.html", content="_blank.html", username=session["username"])
+
+
 # </editor-fold>
 
 
@@ -83,34 +85,32 @@ def insert_book():
         else:
             series_id = series_id[0]["id"]
 
-        # Update series
+        # Get series information
         series_end = db.execute("SELECT end_vol FROM series WHERE id = ?", series_id)[0]["end_vol"]
+        series_current = db.execute("SELECT current FROM series WHERE id = ?", series_id)[0]["current"]
         series_missing = db.execute("SELECT id, volume FROM series_missing WHERE series_id = ? ORDER BY volume",
                                     series_id)
         series_avail = db.execute("SELECT volume FROM book WHERE series_id = ? ORDER BY volume", series_id)
 
-        # Update series status
+        # Update series table
         if request.form.get("volume") == series_end:
             db.execute("UPDATE series SET status = ? WHERE series_id = ?", "End", series_id)
-
-        avail_vol = []
-        missing_vol = []
-        for row in series_missing:
-            missing_vol.append(row["volume"])
-        for row in series_avail:
-            avail_vol.append(row["volume"])
+        if request.form.get("volume") > series_current:
+            db.execute("UPDATE series SET current = ? WHERE series_id = ?", request.form.get("volume"), series_id)
 
         # Delete missing volume
-        if request.form.get("volume") in missing_vol:
-            db.execute("DELETE FROM series_missing WHERE id = ?", row["id"])
+        for row in series_missing:
+            if request.form.get("volume") == row["volume"]:
+                db.execute("DELETE FROM series_missing WHERE id = ?", row["id"])
 
-        # Update missing volumes, only if volume is an integer
-        try:
-            for i in range(1, int(request.form.get("volume"))):
-                if i not in avail_vol:
-                    db.execute("INSERT INTO series_missing(series_id, volume) VALUES(?, ?)", series_id, i)
-        except:
-            pass
+        # Update missing volumes
+        avail_vol = []
+        for row in series_avail:
+            avail_vol.append(row["volume"])
+        for i in range(1, int(request.form.get("volume"))):
+            if i not in avail_vol:
+                db.execute("INSERT INTO series_missing(series_id, volume) VALUES(?, ?)", series_id, i)
+
     else:
         series_id = None
 
@@ -144,15 +144,103 @@ def insert_series():
     if len(check) > 0:
         flash("This series' title was existed.", "Error")
 
-    list_keys = [key for key in request.form.keys()]
-    keys = ','.join(f'"{key}"' for key in list_keys)
-    values = ','.join(f'"{request.form.get(key)}"' for key in list_keys)
+    keys = ','.join(f'"{key}"' for key in request.form.keys())
+    values = ','.join(f'"{request.form.get(key)}"' for key in request.form.keys())
     db.execute(f"INSERT INTO series({keys}, user_id) VALUES({values}, ?)", session["user_id"])
+
+    flash("Series inserted.", "Success")
+    return redirect("/series")
+
+
 # </editor-fold>
 
 
+# <editor-fold desc="Delete functions">
+@app.route("/delete-book", methods=['POST'])
+def delete_book():
+    ids = ','.join(f'"{key}"' for key in request.form.keys())
+
+    for id in ids:
+        # Retrieve book information
+        series_id = db.execute("SELECT series_id FROM book WHERE id ?", id)
+        if not series_id:
+            break
+        else:
+            series_id = series_id[0]["series_id"]
+        volume = db.execute("SELECT volume FROM book WHERE id = ?", id)
+        if not volume:
+            break
+        else:
+            volume = volume[0]["volume"]
+
+        # Get series information
+        series_end = db.execute("SELECT end_vol FROM series WHERE id = ?", series_id)[0]["end_vol"]
+        series_current = db.execute("SELECT current FROM series WHERE id = ?", series_id)[0]["current"]
+        series_missing = db.execute("SELECT id, volume FROM series_missing WHERE series_id = ? ORDER BY volume",
+                                    series_id)
+        series_avail = db.execute("SELECT volume FROM book WHERE series_id = ? ORDER BY volume", series_id)
+
+        avail_vol = []
+        for row in series_avail:
+            avail_vol.append(row["volume"])
+
+        # Update series
+        if volume == series_current:
+            db.execute("UPDATE series SET current = ? WHERE series_id = ?", avail_vol[-2], series_id)
+
+        # Delete missing volume
+        for row in series_missing:
+            if avail_vol[-2] < row["volume"] < int(volume):
+                db.execute("DELETE FROM series_missing WHERE id = ?", row["id"])
+
+    # Delete from accessory table
+    db.execute(f"DELETE FROM accessory WHERE book_id IN ({ids})")
+
+    # Delete from book table
+    db.execute(f"DELETE FROM book WHERE id IN ({ids})")
+
+    flash("Book deleted. Series updated.", "Success")
+    return redirect("/library")
 
 
+@app.route("/delete-series", methods=['POST'])
+def delete_series():
+    ids = ','.join(f'"{key}"' for key in request.form.keys())
+
+    # Update book table
+    db.execute(f"UPDATE book SET series_id = ? WHERE series_id IN ({ids})", None)
+
+    # Delete release date
+    db.execute(f"DELETE FROM release_calendar WHERE series_id IN ({ids})")
+
+    # Delete from series table
+    db.execute(f"DELETE FROM series WHERE id IN ({ids})")
+
+    flash("Series deleted. Books in series updated.", "Success")
+    return redirect("/series")
+
+
+@app.route("/delete-accessory", methods=['POST'])
+def delete_accessory():
+    ids = ','.join(f'"{key}"' for key in request.form.keys())
+
+    # Delete from accessory table
+    db.execute(f"DELETE FROM accessory WHERE id IN ({ids})")
+
+    flash("Accessory deleted.", "Success")
+    return redirect("/accessory")
+
+
+@app.route("/delete-date", methods=['POST'])
+def delete_date():
+    ids = ','.join(f'"{key}"' for key in request.form.keys())
+
+    # Delete from release calendar table
+    db.execute(f"DELETE FROM release_calendar WHERE id IN ({ids})")
+
+    flash("Release date deleted.", "Success")
+    return redirect("/calendar")
+# </editor-fold>
 
 
 # <editor-fold desc="Login functions">
