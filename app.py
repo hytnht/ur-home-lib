@@ -44,6 +44,7 @@ def after_request(response):
     return response
 
 
+# <editor-fold desc="Display functions">
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -61,8 +62,10 @@ def library():
                                username=session["username"])
 
     return render_template("library.html", content="_blank.html", username=session["username"])
+# </editor-fold>
 
 
+# <editor-fold desc="Insert functions">
 @app.route("/new-book", methods=['POST'])
 def insert_book():
     # Ensure title was submitted
@@ -145,9 +148,14 @@ def insert_series():
     keys = ','.join(f'"{key}"' for key in list_keys)
     values = ','.join(f'"{request.form.get(key)}"' for key in list_keys)
     db.execute(f"INSERT INTO series({keys}, user_id) VALUES({values}, ?)", session["user_id"])
+# </editor-fold>
 
 
-# Login functions
+
+
+
+
+# <editor-fold desc="Login functions">
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
@@ -333,3 +341,4 @@ def reset_pass():
 
     else:
         return render_template("_reset_pass.html")
+# </editor-fold>

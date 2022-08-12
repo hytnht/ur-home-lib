@@ -2,16 +2,22 @@
     <table class="table table-striped table-sm">
         <thead>
         <tr>
+            <th>
+                <input class="d-table-cell" type="checkbox" onclick="checkAll(this)" name="row" checked>
+            </th>
             {% for head in table_head %}
-                <th scope="col" name={{'t'~head}}>{{ head }}</th>
+                <th scope="col" name={{'t-'~head}}>{{ head }}</th>
             {% endfor %}
         </tr>
         </thead>
         <tbody>
             {% for data in table_data %}
                 <tr>
+                    <td>
+                        <input class="d-table-cell c-row" type="checkbox" value={{data["id"]}}>
+                    </td>
                     {% for head in table_head %}
-                    <td>{{ data[head] }}</td>
+                        <td name={{'t-'~head}}>{{ data[head] }}</td>
                     {% endfor %}
                 </tr>
             {% endfor %}

@@ -19,27 +19,35 @@ Library
 
 
 {% block sub_btn %}
+<!--Show column-->
 <div class="dropdown">
     <button class="btn btn-sm btn-outline-secondary me-2 px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown">
         <i class="fa-solid fa-eye me-2"></i>
         Show columns
     </button>
-    <form name="toggle-column" onsubmit="return false" class="dropdown-menu">
+    <div class="dropdown-menu">
+        <div class="form-check dropdown-item px-lg-5">
+            <input class="form-check-input" type="checkbox" onclick="checkAll(this)" name="col" checked>
+            <label class="form-check-label fw-bold text-primary">Select All</label>
+        </div>
+        <hr class="m-0">
         {% for head in table_head %}
         <div class="form-check dropdown-item px-lg-5">
-            <input class="form-check-input" type="checkbox" onclick="toggleCol(this.name)" name={{ head }} checked>
+            <input name={{'bt-'~head}} class="form-check-input c-col" type="checkbox" onclick="toggle(this.name,'table-cell')"
+                   checked>
             <label class="form-check-label">{{ head }}</label>
         </div>
         {% endfor %}
-
-    </form>
+    </div>
 </div>
 
-<button type="button" class="btn btn-sm btn-outline-secondary me-2 px-3">
+<!--Delete-->
+<button action="/delete-book" type="button" class="btn btn-sm btn-outline-secondary me-2 px-3">
     <i class="fa-solid fa-minus me-2"></i>
-    Delete items
+    Delete
 </button>
 
+<!--Insert-->
 <button type="button" class="btn btn-sm btn-outline-secondary me-2 px-3" data-bs-toggle="modal"
         data-bs-target="#insert-modal">
     <i class="fa-solid fa-plus me-2"></i>

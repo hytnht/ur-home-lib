@@ -1,32 +1,28 @@
-document.addEventListener("DOMContentLoaded", function () {
-    document.querySelector(".insert-close").addEventListener("click", function() {
-        document.querySelector("#insert-modal").classList.remove("show");
-        document.querySelector(".modal-backdrop").classList.remove("show");
-    })
-})
-let showMode = 'table-cell';
-function toggleCol(btn){
+// document.addEventListener("DOMContentLoaded", function () {
+//     document.querySelector(".insert-close").addEventListener("click", function() {
+//         document.querySelector("#insert-modal").classList.remove("show");
+//         document.querySelector(".modal-backdrop").classList.remove("show");
+//     })
+// })
 
-    // First isolate the checkbox by name using the
-    // name of the form and the name of the checkbox
+// Select all checkboxes which classes included 'c' + checkbox's name
+function checkAll(box) {
+    col = document.getElementsByClassName('c-'+box.name)
+    for (let i = 0; i < col.length; i++)
+        col[i].checked = box.checked
+}
 
-    btn   = document.forms['toggle-column'].elements[btn];
+// Checkbox toggle column which name = checkbox's name omitted the starting 'b'
+function toggle(box_name,mode) {
+    let box = document.getElementsByName(box_name)[0];
+    let col = document.getElementsByName(box_name.substring(1))
+    if (box.checked)
+        for (let i = 0; i < col.length; i++)
+            col[i].style.display = mode
+    else
+        for (let i = 0; i < col.length; i++)
+            col[i].style.display = 'none'
 
-    // Next find all the table cells by using the DOM function
-    // getElementsByName passing in the constructed name of
-    // the cells, derived from the checkbox name
-
-    let cells = document.getElementsByName('t'+btn.name);
-
-    // Once the cells and checkbox object has been retrieved
-    // the show hide choice is simply whether the checkbox is
-    // checked or clear
-
-    let mode = btn.checked ? showMode : 'none';
-
-    // Apply the style to the CSS display property for the cells
-
-    for(let j = 0; j < cells.length; j++) cells[j].style.display = mode;
 }
 
 
