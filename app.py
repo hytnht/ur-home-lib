@@ -7,7 +7,6 @@ from random import random
 from flask import Flask, redirect, render_template, request, session, flash, g
 from flask_mail import Mail, Message
 from werkzeug.security import check_password_hash, generate_password_hash
-from werkzeug.utils import secure_filename
 from flask_session import Session
 from helpers import *
 
@@ -55,10 +54,12 @@ def index():
 def library():
     # Query database
     books = db.execute("SELECT * FROM book WHERE user_id = ?", session["user_id"])
-    columns = [key for key in books[0].keys() if "id" not in key]
-    # Get columns' names
+
+    # If database was not blank
     if len(books) > 0:
+        columns = [key for key in books[0].keys() if "id" not in key]
         return render_template("library.html", content="_table.html", table_head=columns, table_data=books,
+                               series=query_title("series"), books=query_title("book"), delete="book",
                                username=session["username"])
 
     return render_template("library.html", content="_blank.html", username=session["username"])
@@ -68,13 +69,15 @@ def library():
 def series():
     # Query database
     series = db.execute("SELECT * FROM series WHERE user_id = ?", session["user_id"])
-    columns = [key for key in series[0].keys() if "id" not in key]
-    # Get columns' names
+
+    # If database was not blank
     if len(series) > 0:
-        return render_template("library.html", content="_table.html", table_head=columns, table_data=series,
+        columns = [key for key in series[0].keys() if "id" not in key]
+        return render_template("series.html", content="_table.html", table_head=columns, table_data=series,
+                               series=query_title("series"), books=query_title("book"), delete="series",
                                username=session["username"])
 
-    return render_template("library.html", content="_blank.html", username=session["username"])
+    return render_template("series.html", content="_blank.html", username=session["username"])
 
 
 @app.route("/accessory")
@@ -85,13 +88,29 @@ def accessory():
         "JOIN accessory ON book.id = accessory.book_id WHERE book.user_id = ?",
         session["user_id"])
 
-    # Get columns' names
+    # If database was not blank
     if len(accessories) > 0:
         columns = accessories[0].keys()
-        return render_template("library.html", content="_table.html", table_head=columns, table_data=accessories,
+        return render_template("accessories.html", content="_table.html", table_head=columns, table_data=accessories,
+                               series=query_title("series"), books=query_title("book"), delete="accessory",
                                username=session["username"])
 
-    return render_template("library.html", content="_blank.html", username=session["username"])
+    return render_template("accessories.html", content="_blank.html", username=session["username"])
+
+
+@app.route("/log")
+def log():
+    # Query database
+    log = db.execute("SELECT * FROM log JOIN book ON log.book_id = book.id WHERE user_id = ?", session["user_id"])
+
+    # If database was not blank
+    if len(log) > 0:
+        columns = [key for key in log[0].keys() if "id" not in key]
+        return render_template("log.html", content="_table.html", table_head=columns, table_data=log,
+                               series=query_title("series"), books=query_title("book"), delete="log",
+                               username=session["username"])
+
+    return render_template("log.html", content="_blank.html", username=session["username"])
 
 
 @app.route("/calendar")
@@ -135,7 +154,7 @@ def new_series():
         return '', 204
 
     # Ensure title was not duplicate:
-    if check_series(request.form.get("title")):
+    if check_series(request.form.get("title"), add=False):
         flash("This series' title was existed.", "Error")
 
     insert_series(request.form.to_dict())
@@ -144,8 +163,8 @@ def new_series():
     return redirect("/series")
 
 
-@app.route("/new-date", methods=['POST'])
-def insert_date():
+@app.route("/new-calendar", methods=['POST'])
+def new_calendar():
     # Ensure series title was submitted
     if not request.form.get("series"):
         flash("Please enter the series' title.", "Error")
@@ -156,60 +175,45 @@ def insert_date():
         flash("Please enter the date", "Error")
         return '', 204
 
-    series_id = check_series(dict["series"])
-    if not series_id:
-        series_id = db.execute("INSERT INTO series(title, user_id) VALUES(?, ?)", dict["series"],
-                               session["user_id"])
-
-    list_keys = [key for key in request.form.keys() if key != "series"]
-    keys = ','.join(f'"{key}"' for key in list_keys)
-    values = ','.join(f'"{request.form.get(key)}"' for key in list_keys)
-    db.execute(f"INSERT INTO release_calendar({keys}, series_id) VALUES({values}, ?)", series_id)
+    insert_calendar(request.form.to_dict())
 
     flash("Release date inserted.", "Success")
     return redirect("/calendar")
 
+
+# @app.route("/new-column", methods=['GET', 'POST'])
+# def new_column():
 
 # </editor-fold>
 
 # <editor-fold desc="Delete functions">
 @app.route("/delete-book", methods=['POST'])
 def delete_book():
-    print(request.form.keys())
     for id in request.form.keys():
-        print(id)
         # Retrieve book information
         series_id = db.execute("SELECT series_id FROM book WHERE id = ?", id)
         if not series_id:
             pass
         else:
             series_id = series_id[0]["series_id"]
+
         volume = db.execute("SELECT volume FROM book WHERE id = ?", id)
         if not volume:
             pass
         else:
             volume = volume[0]["volume"]
 
-        # Get series information
-        series_end = db.execute("SELECT end_vol FROM series WHERE id = ?", series_id)[0]["end_vol"]
-        series_current = db.execute("SELECT current FROM series WHERE id = ?", series_id)[0]["current"]
-        series_missing = db.execute("SELECT id, volume FROM series_missing WHERE series_id = ? ORDER BY volume",
-                                    series_id)
-        series_avail = db.execute("SELECT volume FROM book WHERE series_id = ? ORDER BY volume", series_id)
-
-        avail_vol = []
-        for row in series_avail:
-            avail_vol.append(row["volume"])
-
         next_current = 0
-        # Update series
-        if volume == series_current:
+
+        # Update series current
+        if volume == series_current(series_id):
+            avail_vol = series_avail(series_id)
             if len(avail_vol) > 2:
                 next_current = avail_vol[-2]
-            db.execute("UPDATE series SET current = ? WHERE series_id = ?", next_current, series_id)
+            db.execute("UPDATE series SET current = ? WHERE id = ?", next_current, series_id)
 
         # Delete missing volume
-        for row in series_missing:
+        for row in series_missing(series_id):
             if next_current < row["volume"] < int(volume):
                 db.execute("DELETE FROM series_missing WHERE id = ?", row["id"])
 
@@ -253,8 +257,8 @@ def delete_accessory():
     return redirect("/accessory")
 
 
-@app.route("/delete-date", methods=['POST'])
-def delete_date():
+@app.route("/delete-calendar", methods=['POST'])
+def delete_calendar():
     ids = ','.join(f'"{key}"' for key in request.form.keys())
 
     # Delete from release calendar table
@@ -456,7 +460,7 @@ def reset_pass():
 
 # </editor-fold>
 
-# <editor-fold desc="Upload functions">
+# <editor-fold desc="Mass upload functions">
 @app.route("/upload-book", methods=['POST'])
 def upload_book():
     data = upload_file(request.files)
@@ -467,7 +471,7 @@ def upload_book():
     return redirect("/mass-upload")
 
 
-@app.route("/upload-book", methods=['POST'])
+@app.route("/upload-series", methods=['POST'])
 def upload_series():
     data = upload_file(request.files)
     for dict in data:
@@ -477,34 +481,13 @@ def upload_series():
     return redirect("/mass-upload")
 
 
-def upload_file(request):
-    # Ensure file was uploaded
-    if not request:
-        flash("Please upload a csv file.", "Error")
+@app.route("/upload-calendar", methods=['POST'])
+def upload_calendar():
+    data = upload_file(request.files)
+    for dict in data:
+        insert_calendar(dict)
 
-    file = request["file"]
+    flash("File uploaded.", "Success")
+    return redirect("/mass-upload")
 
-    if file.filename == "":
-        flash("Please select a file.", "Error")
-        return []
-
-    # Ensure file uploaded was csv
-    if file.filename.rsplit('.', 1)[1].lower() != "csv":
-        flash("Only accept csv file.", "Error")
-        return []
-
-    # Save file to upload folder
-    filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
-    # Get file data
-    file.seek(0)
-    reader = file.read().decode("utf-8-sig")
-    # data = []
-    # for row in csv.DictReader(reader.splitlines(), skipinitialspace=True):
-    #     print("Data: ",data)
-    #     data = data + [{key: value for key, value in row.items()}]
-    data = [{k: v for k, v in row.items()} for row in csv.DictReader(reader.splitlines(), skipinitialspace=True)]
-
-    return data
 # </editor-fold>
