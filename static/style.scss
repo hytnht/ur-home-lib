@@ -10,7 +10,7 @@ $dark: #1C1F37;
 $shadow: #c5c5c5;
 $lightshadow: #eeeeee;
 
-@import "../node_modules/bootstrap/scss/bootstrap.scss";
+@import "./node_modules/bootstrap/scss/bootstrap.scss";
 
 html, body {
   margin: 0;
@@ -100,11 +100,27 @@ footer img {
 }
 
 /* Sidebar */
-@include media-breakpoint-up(lg) {
+.sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  padding: 48px 0 0;
+  font-size: .85rem;
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+@media (max-width: 767.98px) {
   .sidebar {
-    height: 100vh;
-    width: 12%;
-    font-size: .85rem;
+    top: 5rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .sidebar {
+    flex: 0 0 auto;
+    width: 12.5%;
   }
 }
 
@@ -112,21 +128,33 @@ footer img {
   color: $light;
 }
 
+/* Content */
+
+@media (min-width: 992px) {
+  .content-col {
+    flex: 0 0 auto;
+    width: 87.5%;
+  }
+}
 /* Modal */
 .modal-link {
   font-size: .85rem;
 }
+
 @media (min-width: 576px) {
   #insert-modal .modal-dialog {
     max-width: 80%;
   }
 }
+
 .accordion-button {
   font-weight: bold;
 }
+
 .accordion-button:not(.collapsed) {
   background-color: $white;
 }
+
 .nav-tabs {
   padding-left: 0;
 }
@@ -135,11 +163,30 @@ footer img {
 .Error {
   background-color: $warning;
 }
+
 .Success {
   background-color: $success;
+
   .toast-body {
     color: $white;
   }
+}
+
+/* Table */
+table {
+  font-size: .8rem;
+}
+
+th:not(.no-resize) {
+  resize: horizontal;
+  overflow: auto;
+}
+
+.no-resize {
+  width: 25px;
+}
+thead:hover {
+  cursor: pointer;
 }
 
 

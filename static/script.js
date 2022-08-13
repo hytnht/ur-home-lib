@@ -1,21 +1,53 @@
-// document.addEventListener("DOMContentLoaded", function () {
-//     document.querySelector(".insert-close").addEventListener("click", function() {
-//         document.querySelector("#insert-modal").classList.remove("show");
-//         document.querySelector(".modal-backdrop").classList.remove("show");
-//     })
-// })
-
-// Select all checkboxes which classes included 'c' + checkbox's name
-function checkAll(box) {
-    col = document.getElementsByClassName('c-'+box.name)
-    for (let i = 0; i < col.length; i++)
-        col[i].checked = box.checked
+// Sort columns
+function sort(column) {
+    let table = document.getElementById("table-display");
+    let direction = "asc";
+    let i, x, y, reverse, count = 0;
+    let swap = true
+    while (swap) {
+        swap = false;
+        let rows = table.rows;
+        for (i = 1; i < (rows.length - 1); i++) {
+            x = rows[i].getElementsByTagName("td")[column];
+            y = rows[i + 1].getElementsByTagName("td")[column];
+            if (direction === "asc") {
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    reverse = true;
+                    break;
+                }
+            } else {
+                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                    reverse = true;
+                    break;
+                }
+            }
+        }
+        if (reverse) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            swap = true;
+            count++;
+        } else if (count === 0 && direction === "asc") {
+            direction = "desc";
+            swap = true;
+        }
+    }
 }
 
-// Checkbox toggle column which name = checkbox's name omitted the starting 'b'
-function toggle(box_name,mode) {
-    let box = document.getElementsByName(box_name)[0];
-    let col = document.getElementsByName(box_name.substring(1))
+// Select all checkboxes which classes included 'c' (check) + checkbox's name
+function checkAll(box, toggleMode) {
+    let col = document.getElementsByClassName('c-' + box.name)
+    for (let i = 0; i < col.length; i++) {
+        col[i].checked = box.checked
+        if (toggleMode) {
+            toggle(col[i].getAttribute("name"), toggleMode)
+        }
+    }
+}
+
+// Checkbox toggle column which name = checkbox's name omitted the starting 'b' (button)
+function toggle(boxName, mode) {
+    let box = document.getElementsByName(boxName)[0];
+    let col = document.getElementsByName(boxName.substring(1))
     if (box.checked)
         for (let i = 0; i < col.length; i++)
             col[i].style.display = mode
@@ -25,11 +57,7 @@ function toggle(box_name,mode) {
 
 }
 
-
-// Change login modal
-let modal = document.querySelector("#modal-template");
-
-// To login
+// Change login modal to login
 function login() {
     fetch('login')
         .then(response => response.text())
@@ -63,3 +91,5 @@ function reset_pass() {
         .then(response => response.text())
         .then(text => document.querySelector("#modal-template").innerHTML = text);
 }
+
+
