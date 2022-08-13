@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Library
+{% endblock title %}
+
+{% block actions %}
+<li class="nav-item">
+    <a class="nav-link" href="/book-column">
+        Insert column
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="#">
+        Mass upload
+    </a>
+</li>
+{% endblock actions %}
+
+
+{% block sub_btn %}
+<!--Show column-->
+<div class="dropdown">
+    <button class="btn btn-sm btn-outline-secondary me-2 px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa-solid fa-eye me-2"></i>
+        Show columns
+    </button>
+    <div class="dropdown-menu">
+        <div class="form-check dropdown-item px-lg-5">
+            <input class="form-check-input" type="checkbox" onclick="checkAll(this)" name="col" checked>
+            <label class="form-check-label fw-bold text-primary">Select All</label>
+        </div>
+        <hr class="m-0">
+        {% for head in table_head %}
+        <div class="form-check dropdown-item px-lg-5">
+            <input name={{'bt-'~head}} class="form-check-input c-col" type="checkbox"
+                   onclick="toggle(this.name,'table-cell')"
+                   checked>
+            <label class="form-check-label">{{ head }}</label>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!--Delete-->
+<button action="/delete-book" form="delete-book"
+        onclick="return confirm('Delete book will delete its accessories too. Do you really want to delete?')"
+        type="submit"
+        class="btn btn-sm btn-outline-secondary me-2 px-3">
+    <i class="fa-solid fa-minus me-2"></i>
+    Delete
+</button>
+
+<!--Insert items-->
+<button type="button" class="btn btn-sm btn-outline-secondary me-2 px-3" data-bs-toggle="modal"
+        data-bs-target="#insert-modal">
+    <i class="fa-solid fa-plus me-2"></i>
+    Insert item
+</button>
+{% endblock sub_btn %}
+
+{% block content %}
+<form action="/upload-book" method="post" enctype="multipart/form-data">
+    Your file: <input type="file" name="file" accept=".csv">
+    <input type="submit" value="Upload">
+</form>
+{% endblock content %}
+
+
+
+
+
+
+
+
+
+
+
