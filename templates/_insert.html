@@ -12,6 +12,9 @@
                     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#publish-form"
                             type="button" role="tab" aria-controls="series-form" aria-selected="false">Calendar
                     </button>
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#log-form"
+                            type="button" role="tab" aria-controls="series-form" aria-selected="false">Log
+                    </button>
                 </div>
                 <div class="tab-content">
                     <!-- Book -->
@@ -29,7 +32,7 @@
                             <div class="col-7">
                                 <label for="title" class="form-label">Title</label>
                                 <input type="text" class="form-control" id="title" name="title"
-                                       placeholder="Harry Potter and the Sorcerer's Stone" Required>
+                                       placeholder="Harry Potter and the Sorcerer's Stone" required>
                                 <div class="invalid-feedback">
                                     Please enter the book's title.
                                 </div>
@@ -230,7 +233,7 @@
                                 <label for="title" class="form-label">Name</label>
                                 <input type="text" class="form-control" id="sr_name" name="title"
                                        placeholder="Harry Potter"
-                                       Required>
+                                       required>
                                 <div class="invalid-feedback">
                                     Please enter the series' title.
                                 </div>
@@ -288,16 +291,16 @@
                             </button>
                         </h6>
                         <div class="row g-3 accordion-collapse collapse show" id="publish_detail">
-                            <div class="col-md-4">
-                                <label for="title" class="form-label">Date</label>
+                            <div class="col-md-3">
+                                <label for="pb_date" class="form-label">Date</label>
                                 <input type="datetime-local" class="form-control" id="pb_date" name="date"
-                                       Required>
+                                       required>
                                 <div class="invalid-feedback">
                                     Please enter the release date.
                                 </div>
                             </div>
 
-                            <div class="col-sm-7">
+                            <div class="col-sm-8">
                                 <label for="pb_series" class="form-label">Series</label>
                                 <input class="form-control" list="series-list" name="series" id="pb_series">
                             </div>
@@ -320,6 +323,72 @@
                                 <div class="col-sm-6">
                                     <label for="{{ pb_column }}" class="form-label">{{ pb_column }}</label>
                                     <input type="text" class="form-control" id="{{ pb_column }}">
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-light me-3 border-primary" type="reset">Reset</button>
+                            <button class="btn btn-secondary" type="submit">Insert</button>
+                        </div>
+                    </form>
+
+                    <!-- Log  -->
+                    <form action="/new-log" method="post" id="log-form"
+                          class="needs-validation accordion tab-pane fade"
+                          autocomplete="off"
+                          novalidate role="tabpanel">
+                        <h6 class="mb-3">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#log_detail" aria-expanded="true"
+                                    aria-controls="log_detail">Log
+                            </button>
+                        </h6>
+                        <div class="row g-3 accordion-collapse collapse show" id="log_detail">
+                            <div class="col-md-3">
+                                <label for="lg_date" class="form-label">Date</label>
+                                <input type="datetime-local" class="form-control today-date" id="lg_date" name="date" required>
+                                <div class="invalid-feedback">
+                                    Please enter the date.
+                                </div>
+                            </div>
+
+                            <div class="col-sm-9">
+                                <label for="lg_book" class="form-label">Book</label>
+                                <input class="form-control" list="books-list" name="book" id="lg_book">
+                                <datalist id="books-list">
+                                    <option></option>
+                                    {% for title in books %}
+                                        <option>{{ title }}</option>
+                                    {% endfor %}
+                                </datalist>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label for="lg_act" class="form-label">Activity</label>
+                                <input type="text" class="form-control" id="lg_act" name="activities">
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label for="lg_borrower" class="form-label">Borrower</label>
+                                <input type="text" class="form-control" id="lg_borrower" name="borrower">
+                            </div>
+                        </div>
+
+                        <h6 class="mb-3 mt-3">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#pb_user_custom" aria-expanded="true"
+                                    aria-controls="pb_user_custom">User Custom
+                            </button>
+                        </h6>
+
+                        <div class="row g-3 mt-0 accordion-collapse collapse show" id="lg_user_custom">
+                            {% for lg_column in lg_custom %}
+                            <div class="my-3">
+                                <div class="col-sm-6">
+                                    <label for="{{ lg_column }}" class="form-label">{{ lg_column }}</label>
+                                    <input type="text" class="form-control" id="{{ lg_column }}">
                                 </div>
                             </div>
                             {% endfor %}
