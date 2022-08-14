@@ -6,7 +6,7 @@
                 <input class="d-table-cell" type="checkbox" onclick="check_all(this, 'table-row')" name="row">
             </th>
             {% for head in table_head %}
-                <th scope="col" name={{'t-'~head}} onclick="sort('{{loop.index}}')">{{ head }}</th>
+                <th scope="col" name={{'t-'~head}} onclick="sort('{{loop.index}}')">{{ column_name(head) }}</th>
             {% endfor %}
         </tr>
         </thead>

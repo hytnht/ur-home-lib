@@ -52,7 +52,7 @@ def library():
 
     # If database was not blank
     if len(books) > 0:
-        columns = [column_name(key) for key in books[0].keys() if "id" not in key]
+        columns = [key for key in books[0].keys() if "id" not in key]
         return render_template("layout.html", title="Library", content="_table.html",
                                table_head=columns, table_data=books,
                                series=query_title("series"), books=query_title("book"),
@@ -253,7 +253,7 @@ def new_column():
     if type == "number":
         type = "REAL"
 
-    name = "uc_" + secure_filename(request.form.get("name"))
+    name = "uc_" + secure_filename(request.form.get("name")).replace(".", "_").strip().lower()
     db.execute("ALTER TABLE ? ADD ? ?", table, name, type)
     db.execute("INSERT INTO user_custom(name, table_name, user_id) VALUES(?,?,?)", name, table, session["user_id"])
 
@@ -379,6 +379,29 @@ def delete_log():
 
     flash("Log deleted.", "Success")
     return redirect("/log")
+
+
+@app.route("/delete-column", methods=['POST'])
+@login_required
+def delete_column():
+    table = request.form.get("table")
+    if not table or table not in ["accessory", "book", "log", "release_calendar", "series"]:
+        flash("Wrong table.", "Error")
+        return redirect("/library")
+
+    name = "uc_" + secure_filename(request.form.get("name")).replace(".", "_").strip().lower()
+
+    if name not in custom_column(table):
+        flash("Wrong column name.", "Error")
+        return redirect("/library")
+
+    db.execute("ALTER TABLE ? DROP COLUMN ?", table, name)
+    db.execute("DELETE FROM user_custom WHERE name = ? AND table_name = ? AND user_id = ?", name, table,
+               session["user_id"])
+
+    flash("Column deleted.", "Success")
+    return redirect("/library")
+
 
 # </editor-fold>
 

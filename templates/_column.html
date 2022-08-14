@@ -1,38 +1,67 @@
 <div class="modal fade" tabindex="-1" id="column-modal">
-    <div class="modal-dialog">
-        <div class="modal-content rounded-5 shadow">
-            <div class="modal-header p-5 pb-4 border-bottom-0">
-                <h2 class="fw-bold mb-0">User custom column</h2>
-                <button type="button" class="btn-close close-modal" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-5 pt-0">
-                <form action="/new-column" method="post">
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control rounded-4" id="name" name="name"
-                               placeholder="name@example.com">
-                        <label for="name">Name</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <select name="table" class="form-select form-control rounded-4">
-                            <option>To table</option>
-                            <option value="book">Library</option>
-                            <option value="series">Series</option>
-                            <option value="accessory">Accessories</option>
-                            <option value="release_calendar">Calendar</option>
-                            <option value="log">Log</option>
-                        </select>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <select name="type" class="form-select form-control rounded-4">
-                            <option>Type</option>
-                            <option value="text">Text</option>
-                            <option value="number">Number</option>
-                            <option value="date">Date</option>
-                        </select>
-                    </div>
-                    <button class="w-100 mb-2 mt-4 btn btn-lg rounded-4 btn-primary" type="submit">Create column
+    <div class="modal-dialog" id="modal-template">
+        <div class="modal-content rounded-5 shadow px-5">
+            <div class="container my-5">
+                <div class="nav nav-tabs nav-pills mb-3" id="nav-tab" role="tablist">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#insert-column"
+                            type="button" role="tab" aria-controls="insert-column" aria-selected="true">Insert
                     </button>
-                </form>
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#delete-column"
+                            type="button" role="tab" aria-controls="delete-column" aria-selected="false">Delete
+                    </button>
+                </div>
+                <div class="tab-content">
+                    <form action="/new-column" method="post" id="insert-column" role="tabpanel"
+                          class="needs-validation tab-pane fade show active">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control rounded-4" id="name" name="name"
+                                   placeholder="Column name">
+                            <label for="name">Name</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <select name="table" class="form-select form-control rounded-4">
+                                <option>To table</option>
+                                <option value="book">Library</option>
+                                <option value="series">Series</option>
+                                <option value="accessory">Accessories</option>
+                                <option value="release_calendar">Calendar</option>
+                                <option value="log">Log</option>
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <select name="type" class="form-select form-control rounded-4">
+                                <option>Type</option>
+                                <option value="text">Text</option>
+                                <option value="number">Number</option>
+                                <option value="date">Date</option>
+                            </select>
+                        </div>
+                        <button class="w-100 mb-2 mt-4 btn btn-lg rounded-4 btn-primary" type="submit">Create
+                            column
+                        </button>
+                    </form>
+                    <form action="/delete-column" method="post" id="delete-column" role="tabpanel"
+                          class="needs-validation tab-pane fade">
+                        <div class="form-floating mb-3">
+                            <select name="table" class="form-select form-control rounded-4">
+                                <option>From table</option>
+                                <option value="book">Library</option>
+                                <option value="series">Series</option>
+                                <option value="accessory">Accessories</option>
+                                <option value="release_calendar">Calendar</option>
+                                <option value="log">Log</option>
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control rounded-4" id="dl_name" name="name"
+                                   placeholder="Same name with inserted column.">
+                            <label for="dl_name">Name</label>
+                        </div>
+                        <button class="w-100 mb-2 mt-4 btn btn-lg rounded-4 btn-primary" type="submit">Delete
+                            column
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

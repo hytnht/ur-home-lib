@@ -137,13 +137,15 @@ def upload_file(request):
 def column_name(name):
     if name.startswith("ac_") or name.startswith("uc_"):
         name = name[3:]
-    name = str(name).replace("_", " ").replace(".", " ").strip()
+    name = str(name).replace("_", " ")
     name = " ".join(word.capitalize() for word in name.split())
     return name
+
 
 def custom_column(table):
     custom = db.execute("SELECT name FROM user_custom WHERE table_name = ? AND user_id = ?", table, session["user_id"])
     return [row["name"] for row in custom]
+
 
 def login_required(f):
     @wraps(f)
@@ -151,4 +153,5 @@ def login_required(f):
         if session.get("user_id") is None:
             return redirect("/login")
         return f(*args, **kwargs)
+
     return decorated_function
