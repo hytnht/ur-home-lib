@@ -3,7 +3,7 @@ import os
 
 from datetime import datetime
 from random import random
-from flask import Flask, redirect, render_template, request, session, flash, g, json, url_for
+from flask import Flask, render_template, g, json
 from flask_mail import Mail, Message
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
