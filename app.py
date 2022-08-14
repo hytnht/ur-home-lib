@@ -45,6 +45,7 @@ def index():
 
 
 @app.route("/library")
+@login_required
 def library():
     # Query database
     books = db.execute("SELECT * FROM book WHERE user_id = ?", session["user_id"])
@@ -64,6 +65,7 @@ def library():
 
 
 @app.route("/series")
+@login_required
 def series():
     # Query database
     series = db.execute("SELECT * FROM series WHERE user_id = ?", session["user_id"])
@@ -83,6 +85,7 @@ def series():
 
 
 @app.route("/accessory")
+@login_required
 def accessory():
     # Query database
     accessories = db.execute(
@@ -105,6 +108,7 @@ def accessory():
 
 
 @app.route("/log")
+@login_required
 def log():
     # Query database
     log = db.execute("SELECT log.*, book.title FROM log JOIN book ON log.book_id = book.id WHERE user_id = ?",
@@ -125,10 +129,10 @@ def log():
 
 
 @app.route("/calendar")
+@login_required
 def calendar():
     calendar = db.execute("SELECT rc.*, series.title FROM release_calendar rc "
                           "JOIN series ON rc.series_id = series.id WHERE series.user_id = ?", session["user_id"])
-    print(json.dumps(calendar))
     if request.args.get("display") == "calendar":
         return render_template("calendar.html", content="_calendar.html", mode="calendar", data=json.dumps(calendar),
                                username=session["username"])
@@ -149,6 +153,7 @@ def calendar():
 
 # <editor-fold desc="Insert functions">
 @app.route("/new-book", methods=['POST'])
+@login_required
 def new_book():
     # Ensure title was submitted
     if not request.form.get("title"):
@@ -167,6 +172,7 @@ def new_book():
 
 
 @app.route("/new-series", methods=['POST'])
+@login_required
 def new_series():
     # Ensure title was submitted
     if not request.form.get("title"):
@@ -184,6 +190,7 @@ def new_series():
 
 
 @app.route("/new-calendar", methods=['POST'])
+@login_required
 def new_calendar():
     # Ensure series title was submitted
     if not request.form.get("series"):
@@ -202,6 +209,7 @@ def new_calendar():
 
 
 @app.route("/new-log", methods=['POST'])
+@login_required
 def new_log():
     # Ensure date title was submitted
     if not request.form.get("date"):
@@ -230,6 +238,7 @@ def new_log():
 
 
 @app.route("/new-column", methods=['POST'])
+@login_required
 def new_column():
     table = request.form.get("table")
     if not table or table not in ["accessory", "book", "log", "release_calendar", "series"]:
@@ -255,6 +264,7 @@ def new_column():
 
 # <editor-fold desc="Delete functions">
 @app.route("/delete-book", methods=['POST'])
+@login_required
 def delete_book():
     if not request.form.keys() or len(request.form.keys()) == 0:
         flash("No item was selected.", "Error")
@@ -301,6 +311,7 @@ def delete_book():
 
 
 @app.route("/delete-series", methods=['POST'])
+@login_required
 def delete_series():
     if not request.form.keys() or len(request.form.keys()) == 0:
         flash("No item was selected.", "Error")
@@ -322,6 +333,7 @@ def delete_series():
 
 
 @app.route("/delete-accessory", methods=['POST'])
+@login_required
 def delete_accessory():
     if not request.form.keys() or len(request.form.keys()) == 0:
         flash("No item was selected.", "Error")
@@ -337,6 +349,7 @@ def delete_accessory():
 
 
 @app.route("/delete-calendar", methods=['POST'])
+@login_required
 def delete_calendar():
     if not request.form.keys() or len(request.form.keys()) == 0:
         flash("No item was selected.", "Error")
@@ -541,10 +554,17 @@ def reset_pass():
         return render_template("_reset_pass.html")
 
 
+@app.route("/log-out")
+def logout():
+    session.clear()
+    return redirect("/")
+
+
 # </editor-fold>
 
 # <editor-fold desc="Mass upload functions">
 @app.route("/mass-upload", methods=['POST'])
+@login_required
 def mass_upload():
     data = upload_file(request.files)
     table = request.form.get("table")
@@ -570,5 +590,33 @@ def mass_upload():
 
 
 # </editor-fold>
+
+@app.route("/export-data")
+@login_required
+def export():
+    book_data = db.execute("SELECT * FROM book "
+                           "JOIN accessory ON accessory.book_id = book.id "
+                           "JOIN log ON log.book_id = book.id "
+                           "WHERE user_id = ?", session["user_id"])
+    series_data = db.execute("SELECT * FROM series "
+                             "JOIN release_calendar rc ON rc.series_id = series.id "
+                             "WHERE user_id = ?", session["user_id"])
+
+    with open("./static/export/book_data.csv", "w") as file_book:
+        writer = csv.writer(file_book, delimiter=';')
+        writer.writerow(book_data[0].keys())
+        for data in book_data:
+            writer.writerow(data.values())
+
+    with open("./static/export/series_data.csv", "w") as file_series:
+        writer = csv.writer(file_series, delimiter=';')
+        writer.writerow(series_data[0].keys())
+        for data in series_data:
+            writer.writerow(data.values())
+
+    flash(f"Your book data is exported in {os.path.realpath(file_book.name)}", "Success")
+    flash(f"Your series data is exported in {os.path.realpath(file_series.name)}", "Success")
+    return redirect("/library")
+
 
 app.jinja_env.globals.update(column_name=column_name)

@@ -1,6 +1,8 @@
 import csv
+from functools import wraps
+
 from cs50 import SQL
-from flask import request, session, flash
+from flask import request, session, flash, redirect
 
 # Connect database
 db = SQL("sqlite:///database.db")
@@ -143,3 +145,10 @@ def custom_column(table):
     custom = db.execute("SELECT name FROM user_custom WHERE table_name = ? AND user_id = ?", table, session["user_id"])
     return [row["name"] for row in custom]
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("user_id") is None:
+            return redirect("/login")
+        return f(*args, **kwargs)
+    return decorated_function
