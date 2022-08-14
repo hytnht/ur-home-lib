@@ -619,4 +619,27 @@ def export():
     return redirect("/library")
 
 
+@app.route("/download-template")
+@login_required
+def get_template():
+    book = db.execute("SELECT * FROM book WHERE user_id = ?", session["user_id"])
+    series = db.execute("SELECT * FROM series WHERE user_id = ?", session["user_id"])
+    calendar = db.execute("SELECT rc.* FROM release_calendar rc "
+                          "JOIN series ON rc.series_id = series.id"
+                          " WHERE user_id = ?", session["user_id"])
+
+    with open("./static/export/template.csv", "w") as file:
+        writer = csv.writer(file, delimiter=';')
+        writer.writerow("Columns for book table:")
+        writer.writerow(book[0].keys())
+        writer.writerow("Columns for series table:")
+        writer.writerow(series[0].keys())
+        writer.writerow("Columns for calendar table:")
+        writer.writerow(calendar[0].keys())
+
+    flash(f"Your templated is downloaded in {os.path.realpath(file.name)}", "Success")
+    return redirect("/library")
+
+
+
 app.jinja_env.globals.update(column_name=column_name)
