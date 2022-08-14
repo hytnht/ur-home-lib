@@ -1,4 +1,3 @@
-import csv
 import env
 import os
 
@@ -25,14 +24,8 @@ app.config["MAIL_DEFAULT_SENDER"] = os.environ["MAIL_DEFAULT_SENDER"]
 app.config["MAIL_PORT"] = 587
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_USE_TLS"] = True
-app.config['UPLOAD_FOLDER'] = "./static/upload"
 mail = Mail(app)
 Session(app)
-
-
-# # Make sure API key is set
-# if not os.environ.get("API_KEY"):
-#     raise RuntimeError("API_KEY not set")
 
 
 @app.after_request
@@ -58,11 +51,11 @@ def library():
     # If database was not blank
     if len(books) > 0:
         columns = [key for key in books[0].keys() if "id" not in key]
-        return render_template("library.html", content="_table.html", table_head=columns, table_data=books,
+        return render_template("layout.html", title="Library", content="_table.html", table_head=columns, table_data=books,
                                series=query_title("series"), books=query_title("book"), delete="book",
                                username=session["username"])
 
-    return render_template("library.html", content="_blank.html", username=session["username"])
+    return render_template("layout.html", title="Library", content="_blank.html", username=session["username"])
 
 
 @app.route("/series")
@@ -73,11 +66,11 @@ def series():
     # If database was not blank
     if len(series) > 0:
         columns = [key for key in series[0].keys() if "id" not in key]
-        return render_template("series.html", content="_table.html", table_head=columns, table_data=series,
+        return render_template("layout.html", title="Series", content="_table.html", table_head=columns, table_data=series,
                                series=query_title("series"), books=query_title("book"), delete="series",
                                username=session["username"])
 
-    return render_template("series.html", content="_blank.html", username=session["username"])
+    return render_template("layout.html", title="Series", content="_blank.html", username=session["username"])
 
 
 @app.route("/accessory")
@@ -91,11 +84,11 @@ def accessory():
     # If database was not blank
     if len(accessories) > 0:
         columns = [key for key in accessories[0].keys() if "id" not in key]
-        return render_template("accessory.html", content="_table.html", table_head=columns, table_data=accessories,
+        return render_template("layout.html", title="Accessories", content="_table.html", table_head=columns, table_data=accessories,
                                series=query_title("series"), books=query_title("book"), delete="accessory",
                                username=session["username"])
 
-    return render_template("accessory.html", content="_blank.html", username=session["username"])
+    return render_template("layout.html", title="Accessories", content="_blank.html", username=session["username"])
 
 
 @app.route("/log")
@@ -107,11 +100,11 @@ def log():
     # If database was not blank
     if len(log) > 0:
         columns = [key for key in log[0].keys() if "id" not in key]
-        return render_template("log.html", content="_table.html", table_head=columns, table_data=log,
+        return render_template("layout.html", title="Library", content="_table.html", table_head=columns, table_data=log,
                                series=query_title("series"), books=query_title("book"), delete="log",
                                username=session["username"])
 
-    return render_template("log.html", content="_blank.html", username=session["username"])
+    return render_template("layout.html", title="Library", content="_blank.html", username=session["username"])
 
 
 @app.route("/calendar")
@@ -130,12 +123,6 @@ def calendar():
                                    series=query_title("series"), books=query_title("book"), delete="calendar",
                                    username=session["username"])
         return render_template("calendar.html", content="_blank.html", mode="table", username=session["username"])
-
-
-@app.route("/mass-upload")
-def mass_upload():
-    return render_template("mass_upload.html")
-
 
 # </editor-fold>
 
@@ -193,14 +180,25 @@ def new_calendar():
     return redirect("/calendar")
 
 
-# @app.route("/new-column", methods=['GET', 'POST'])
-# def new_column():
+@app.route("/new-column", methods=['POST'])
+def new_column():
+    table = request.form.get("table")
+    if not table or table not in ["accessory", "book", "log", "release_calendar", "series"]:
+        flash("Wrong table.", "Error")
+        return redirect("/library")
+    else:
+        db.execute("ALTER TABLE ? ADD ")
+
 
 # </editor-fold>
 
 # <editor-fold desc="Delete functions">
 @app.route("/delete-book", methods=['POST'])
 def delete_book():
+    if not request.form.keys() or len(request.form.keys()) == 0:
+        flash("No item was selected.", "Error")
+        return redirect("/library")
+
     for id in request.form.keys():
         # Retrieve book information
         series_id = db.execute("SELECT series_id FROM book WHERE id = ?", id)
@@ -243,6 +241,10 @@ def delete_book():
 
 @app.route("/delete-series", methods=['POST'])
 def delete_series():
+    if not request.form.keys() or len(request.form.keys()) == 0:
+        flash("No item was selected.", "Error")
+        return redirect("/series")
+
     ids = ','.join(f'"{key}"' for key in request.form.keys())
 
     # Update book table
@@ -260,6 +262,10 @@ def delete_series():
 
 @app.route("/delete-accessory", methods=['POST'])
 def delete_accessory():
+    if not request.form.keys() or len(request.form.keys()) == 0:
+        flash("No item was selected.", "Error")
+        return redirect("/accessory")
+
     ids = ','.join(f'"{key}"' for key in request.form.keys())
 
     # Delete from accessory table
@@ -271,6 +277,10 @@ def delete_accessory():
 
 @app.route("/delete-calendar", methods=['POST'])
 def delete_calendar():
+    if not request.form.keys() or len(request.form.keys()) == 0:
+        flash("No item was selected.", "Error")
+        return redirect("/calendar")
+
     ids = ','.join(f'"{key}"' for key in request.form.keys())
 
     # Delete from release calendar table
@@ -278,8 +288,6 @@ def delete_calendar():
 
     flash("Release date deleted.", "Success")
     return redirect("/calendar")
-
-
 # </editor-fold>
 
 # <editor-fold desc="Login functions">
@@ -468,38 +476,31 @@ def reset_pass():
 
     else:
         return render_template("_reset_pass.html")
-
-
 # </editor-fold>
 
 # <editor-fold desc="Mass upload functions">
-@app.route("/upload-book", methods=['POST'])
-def upload_book():
+@app.route("/mass-upload", methods=['POST'])
+def mass_upload():
     data = upload_file(request.files)
-    for dict in data:
-        insert_book(dict)
+    table = request.form.get("table")
 
-    flash("File uploaded.", "Success")
-    return redirect("/mass-upload")
-
-
-@app.route("/upload-series", methods=['POST'])
-def upload_series():
-    data = upload_file(request.files)
-    for dict in data:
-        insert_series(dict)
-
-    flash("File uploaded.", "Success")
-    return redirect("/mass-upload")
-
-
-@app.route("/upload-calendar", methods=['POST'])
-def upload_calendar():
-    data = upload_file(request.files)
-    for dict in data:
-        insert_calendar(dict)
-
-    flash("File uploaded.", "Success")
-    return redirect("/mass-upload")
+    if table == "book":
+        for dict in data:
+            insert_book(dict)
+        flash("File uploaded.", "Success")
+        return redirect("/library")
+    elif table == "series":
+        for dict in data:
+            insert_series(dict)
+        flash("Series uploaded.", "Success")
+        return redirect("/series")
+    elif table == "calendar":
+        for dict in data:
+            insert_calendar(dict)
+        flash("Calendar uploaded.", "Success")
+        return redirect("/calendar")
+    else:
+        flash("Wrong table.", "Error")
+        return redirect("/library")
 
 # </editor-fold>

@@ -18,7 +18,7 @@
     <script src="https://unpkg.com/dayjs@1.8.21/plugin/weekOfYear.js"></script>
     <script src="https://unpkg.com/dayjs@1.8.21/plugin/weekday.js"></script>
     <script src="../static/script.js"></script>
-    <title>Your Home Library - {% block title %}{% endblock title %}</title>
+    <title>Your Home Library - {{ title }}</title>
 </head>
 
 <body class="container-fluid px-0">
@@ -100,19 +100,32 @@
 
                 <!--                Actions-->
                 <ul id="actions" class="nav flex-column mb-2">
-                    {% block actions %}{% endblock actions %}
+                    <li class="nav-item">
+                        <div type="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#column-modal">
+                            <i class="fa-solid fa-user-gear me-3"></i>
+                            User custom
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <div type="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#mass-modal">
+                            <i class="fa-solid fa-file-arrow-up me-3"></i>
+                            Mass upload
+                        </div>
+                    </li>
                 </ul>
             </div>
         </nav>
 
         <!--       Modal-->
         {% include '_insert.html' %}
+        {% include '_column.html' %}
+        {% include '_mass_upload.html' %}
 
 
         <div class="content-col col-md-10 ms-lg-auto ms-sm-auto px-md-4">
             <!--            Buttons-->
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">{{ self.title() }}</h1>
+                <h1 class="h2">{{ title }}</h1>
                 <div class="btn-toolbar mb-2 mb-md-0" id="sub-btn">
                     <!--Show columns drowpdown-->
                     <button id="display-button" onclick="display_mode()" type="button"
@@ -138,7 +151,7 @@
 
             <!--            Content-->
             {% block content %}
-            {% include '%s' % content %}
+                {% include '%s' % content %}
             {% endblock content %}
 
         </div>
