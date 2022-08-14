@@ -218,27 +218,44 @@ ol, li {
 
 .calendar-cell {
   text-align: end;
-  min-height: 6rem;
-  padding: 1rem;
+  min-height: 6.8rem;
+  padding: .3rem;
+  display: flex;
+  justify-content: flex-end;
+  overflow: auto;
 }
 
-.calendar-day span {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
+.calendar-cell div div {
+  background-color: $warning;
+  border-radius: 5px;
+  margin-right: .5rem;
+  padding: .25rem;
+  font-size: .85rem;
+  overflow: hidden;
+  height: 1.5rem;
 }
 
 .other-day {
   background-color: $lightshadow;
-  color: $shadow;;
+  color: $shadow;
+}
+.today {
+  background-color: $light;
 }
 
-.today span {
+.today > span {
   color: white;
   border-radius: 50%;
   background-color: $dark;
   padding: .4rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+}
+
+.today div div {
+  background-color: $danger;
+  color: white;
 }
 
 //</editor-fold>

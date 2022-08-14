@@ -4,7 +4,7 @@ import os
 
 from datetime import datetime
 from random import random
-from flask import Flask, redirect, render_template, request, session, flash, g
+from flask import Flask, redirect, render_template, request, session, flash, g, json, url_for
 from flask_mail import Mail, Message
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_session import Session
@@ -116,18 +116,20 @@ def log():
 
 @app.route("/calendar")
 def calendar():
+    calendar = db.execute("SELECT rc.*, series.title FROM release_calendar rc "
+                          "JOIN series ON rc.series_id = series.id WHERE series.user_id = ?", session["user_id"])
+    print(json.dumps(calendar))
     if request.args.get("display") == "calendar":
-        return render_template("calendar.html", content="_calendar.html", mode="calendar", username=session["username"])
+        return render_template("calendar.html", content="_calendar.html", mode="calendar", data=json.dumps(calendar),
+                               username=session["username"])
     else:
-        calendar = db.execute("SELECT rc.*, series.title FROM release_calendar rc "
-                              "JOIN series ON rc.series_id = series.id WHERE series.user_id = ?", session["user_id"])
         if len(calendar) > 0:
             columns = [key for key in calendar[0].keys() if "id" not in key]
             return render_template("calendar.html", content="_table.html", mode="table",
                                    table_head=columns, table_data=calendar,
                                    series=query_title("series"), books=query_title("book"), delete="calendar",
                                    username=session["username"])
-        return render_template("calendar.html", content="_blank.html", mode="table",username=session["username"])
+        return render_template("calendar.html", content="_blank.html", mode="table", username=session["username"])
 
 
 @app.route("/mass-upload")
