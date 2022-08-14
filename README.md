@@ -9,7 +9,7 @@ Clone this repository to your local computer.
 https://github.com/hytnht/ur-home-lib.git
 cd ur-hone-lib
 ```
-##Configuration
+## Configuration
 Create and activate virtualenv:
 ```shell script
 python3 -m venv venv
