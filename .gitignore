@@ -4,10 +4,13 @@ env/
 venv/
 .venv/
 *_session/
+__pycache__/
 *.css
 *.css.map
 *.sqlite
 *.pptx
 *.env
 *.db
+*.py[cod]
+*$py.class
 env.py
