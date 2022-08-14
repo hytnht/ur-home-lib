@@ -645,6 +645,9 @@ def export():
                              "LEFT JOIN release_calendar rc ON rc.series_id = series.id "
                              "WHERE user_id = ?", session["user_id"])
 
+    if not os.path.exists('./static/export'):
+        os.makedirs("./static/export")
+
     with open("./static/export/book_data.csv", "w") as file_book:
         writer = csv.writer(file_book, delimiter=';')
         writer.writerow(book_data[0].keys())
@@ -671,6 +674,8 @@ def get_template():
     series = ['current', 'end_vol', 'status', 'title'] + custom_column("series")
     calendar = ['publisher', 'volume', 'date'] + custom_column("calendar")
 
+    if not os.path.exists('./static/export'):
+        os.makedirs("./static/export")
     with open("./static/export/template.csv", "w") as file:
         writer = csv.writer(file, delimiter=';')
         file.write("Columns for book table: \n")
