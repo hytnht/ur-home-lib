@@ -68,9 +68,9 @@ This is the final project for CS50 Introduction to Computer Science by Havard Un
 - CSS-tricks tutorials
 - StackOverflow
 ### Libraries, frameworks and engines
-Flask, Bootstrap, FontAwesome, Dayjs, CS50, Werkzeug, Jinja, SQLite, SASS
+Flask, Bootstrap, FontAwesome, Dayjs, CS50, Werkzeug, Jinja, SQLite, SASS and 1 line of jquery.
 ### Languages
-Python, Javascript, SQL, HTML, CSS
+Python, Javascript, SQL, HTML, CSS.
 ### Other
 Canva templates for designing banners.
 

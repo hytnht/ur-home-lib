@@ -190,10 +190,8 @@ th:not(.no-resize) {
   width: 25px;
 }
 
-//<editor-fold desc="Description">
-
 /* Cursor */
-i:hover, #this-month:hover, thead:hover {
+i:hover, #this-month:hover, thead:hover, td:hover {
   cursor: pointer;
 }
 
@@ -261,4 +259,3 @@ ol, li {
   color: white;
 }
 
-//</editor-fold>

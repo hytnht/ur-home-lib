@@ -3,7 +3,7 @@ import os
 
 from datetime import datetime
 from random import random
-from flask import Flask, render_template, g, json
+from flask import Flask, render_template, g, json, url_for
 from flask_mail import Mail, Message
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
@@ -41,7 +41,10 @@ def after_request(response):
 # <editor-fold desc="Display functions">
 @app.route("/")
 def index():
-    return render_template("index.html")
+    if not session["user_id"]:
+        return render_template("index.html")
+    else:
+        return redirect("/library")
 
 
 @app.route("/library")
@@ -57,7 +60,8 @@ def library():
         columns = [key for key in books[0].keys() if "id" not in key]
         return render_template("layout.html", title="Library", content="_table.html",
                                table_head=columns, table_data=books,
-                               series=query_title("series"), books=query_title("book"),
+                               series=by_user("title", "series"), books=by_user("title", "book"),
+                               categories=by_user("category", "book"),
                                custom=custom_column("book"), sr_custom=custom_column("series"),
                                pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
                                delete="book",
@@ -79,7 +83,8 @@ def series():
         columns = [key for key in series[0].keys() if "id" not in key]
         return render_template("layout.html", title="Series", content="_table.html",
                                table_head=columns, table_data=series,
-                               series=query_title("series"), books=query_title("book"),
+                               series=by_user("title", "series"), books=by_user("title", "book"),
+                               categories=by_user("category", "book"),
                                custom=custom_column("book"), sr_custom=custom_column("series"),
                                pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
                                delete="series",
@@ -102,7 +107,8 @@ def accessory():
         columns = [key for key in accessories[0].keys() if "id" not in key]
         return render_template("layout.html", title="Accessories", content="_table.html",
                                table_head=columns, table_data=accessories,
-                               series=query_title("series"), books=query_title("book"),
+                               series=by_user("title", "series"), books=by_user("title", "book"),
+                               categories=by_user("category", "book"),
                                custom=custom_column("book"), sr_custom=custom_column("series"),
                                pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
                                delete="accessory",
@@ -123,7 +129,8 @@ def log():
         columns = [key for key in log[0].keys() if "id" not in key]
         return render_template("layout.html", title="Library", content="_table.html",
                                table_head=columns, table_data=log,
-                               series=query_title("series"), books=query_title("book"),
+                               series=by_user("title", "series"), books=by_user("title", "book"),
+                               categories=by_user("category", "book"),
                                custom=custom_column("book"), sr_custom=custom_column("series"),
                                pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
                                delete="log",
@@ -146,8 +153,9 @@ def calendar():
             return render_template("calendar.html", content="_table.html", mode="table",
                                    table_head=columns, table_data=calendar,
                                    custom=custom_column("book"), sr_custom=custom_column("series"),
+                                   categories=by_user("category", "book"),
                                    pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
-                                   series=query_title("series"), books=query_title("book"),
+                                   series=by_user("title", "series"), books=by_user("title", "book"),
                                    delete="calendar",
                                    username=session["username"])
         return render_template("calendar.html", content="_blank.html", mode="table", username=session["username"])
@@ -308,6 +316,9 @@ def delete_book():
     # Delete from accessory table
     db.execute(f"DELETE FROM accessory WHERE book_id IN ({ids})")
 
+    # Delete from log table
+    db.execute(f"DELETE FROM log WHERE book_id IN ({ids})")
+
     # Delete from book table
     db.execute(f"DELETE FROM book WHERE id IN ({ids})")
 
@@ -405,6 +416,153 @@ def delete_column():
 
     flash("Column deleted.", "Success")
     return redirect("/library")
+
+
+# </editor-fold>
+
+# <editor-fold desc="Edit functions">
+@app.route("/library/edit", methods=['GET', "POST"])
+@login_required
+def edit_book():
+    if request.method == 'POST':
+        # Ensure title was submitted
+        if not request.form.get("title"):
+            flash("Please enter the book's title.", "Error")
+            return redirect("/library")
+
+        # Ensure volume was an integer
+        if request.form.get("volume") != "" and not request.form.get("volume").isdigit():
+            flash("Volume can only be an integer or blank.", "Error")
+            return redirect("/library")
+
+        # Updata book table
+        series_id = db.execute("SELECT series_id FROM book WHERE id = ?", request.form.get("id"))[0]["series_id"]
+        list_keys = [key for key in request.form.keys() if key[0:3] != "ac_" and key not in ["series", "id"]]
+        query = ','.join(f'"{key}" = NULLIF("{request.form[key]}","")' for key in list_keys)
+        db.execute(f"UPDATE book SET {query}, series_id = ? WHERE id = ?", series_id, request.form.get("id"))
+
+        # Updata accessory table
+        list_keys = [key for key in request.form.keys() if key[0:3] == "ac_"]
+        query_ac = ','.join(f'"{key[3:]}" = NULLIF("{request.form[key]}","")' for key in list_keys)
+        db.execute(f"UPDATE accessory SET {query_ac} WHERE book_id = ?", request.form.get("id"))
+        print(query)
+        print(request.form.get("id"))
+        flash("Book updated.", "Success")
+        return redirect("/library")
+    else:
+        print("Inside books: ", request.args.get("id"))
+        book = db.execute("SELECT book.*, type, qty, material, ac.status FROM book "
+                          "JOIN accessory ac ON book.id = ac.book_id "
+                          "WHERE book.id = ?", request.args.get("id"))
+        if book is None or len(book) == 0:
+            return redirect("/library")
+        print("book[0]: ", book[0])
+        return render_template("layout.html", title="Library", content="_edit_book.html", data=book[0],
+                               series=by_user("title", "series"), categories=by_user("category", "book"),
+                               custom=custom_column("book"), username=session["username"])
+
+
+@app.route("/series/edit", methods=['GET', "POST"])
+@login_required
+def edit_series():
+    if request.method == 'POST':
+        # Ensure title was submitted
+        if not request.form.get("title"):
+            flash("Please enter the series' title.", "Error")
+            return redirect("/series")
+
+        # Updata series table
+        list_keys = [key for key in request.form.keys()]
+        query = ','.join(f'"{key}" = NULLIF("{request.form[key]}","")' for key in list_keys)
+        db.execute(f"UPDATE series SET {query} WHERE id = ?", request.form.get("id"))
+
+        flash("Series updated.", "Success")
+        return redirect("/series")
+    else:
+        series = db.execute("SELECT * FROM series WHERE id = ?", request.args.get("id"))
+        if series is None or len(series) == 0:
+            return redirect("/series")
+        return render_template("layout.html", title="Series", content="_edit_series.html", data=series[0],
+                               sr_custom=custom_column("series"), username=session["username"])
+
+
+@app.route("/log/edit", methods=['GET', "POST"])
+@login_required
+def edit_log():
+    if request.method == 'POST':
+        # Ensure date title was submitted
+        if not request.form.get("date"):
+            flash("Please enter the date.", "Error")
+            return redirect("/log")
+
+        # Ensure activity was submitted
+        if not request.form.get("activities"):
+            flash("Please enter the activity", "Error")
+            return redirect("/log")
+
+        # Ensure book title was submitted
+        if not request.form.get("title"):
+            flash("Please enter the book title", "Error")
+            return redirect("/log")
+
+        book_id = check_exist("book", request.form.get("title"), add="True")
+
+        list_keys = [key for key in request.form.keys() if "id" not in key and key != "title"]
+        query = ','.join(f'"{key}" = NULLIF("{request.form[key]}","")' for key in list_keys)
+        db.execute(f"UPDATE log SET {query}, book_id = ?, WHERE id = ?", book_id, request.form.get("id"))
+
+        flash("Log updated.", "Success")
+        return redirect("/log")
+    else:
+        log = db.execute("SELECT * FROM log WHERE id = ?", request.args.get("id"))
+        if log is None or len(log) == 0:
+            return redirect("/log")
+        return render_template("layout.html", title="Log", content="_edit_log.html", data=log[0],
+                               books=by_user("title", "book"), lg_custom=custom_column("log"),
+                               username=session["username"])
+
+@app.route("/calendar/edit", methods=['GET', "POST"])
+@login_required
+def edit_calendar():
+    if request.method == 'POST':
+        # Ensure series title was submitted
+        if not request.form.get("series"):
+            flash("Please enter the series' title.", "Error")
+            return redirect("/calendar")
+
+        # Ensure date was submitted
+        if not request.form.get("date"):
+            flash("Please enter the date", "Error")
+            return redirect("/calendar")
+
+        series_id = check_exist("series", request.form.get("series"), add=True)
+        list_keys = [key for key in request.form.keys() if key != "series" and "id" not in key]
+        query = ','.join(f'"{key}" = NULLIF("{request.form[key]}","")' for key in list_keys)
+        db.execute(f"UPDATE calendar SET {query}, series_id = ?, WHERE id = ?", series_id, request.form.get("id"))
+
+        flash("Calendar updated.", "Success")
+        return redirect("/calendar")
+    else:
+        calendar = db.execute("SELECT * FROM calendar WHERE id = ?", request.args.get("id"))
+        if calendar is None or len(calendar) == 0:
+            return redirect("/calendar")
+        return render_template("layout.html", title="Calendar", content="_edit_calendar.html", data=calendar[0],
+                               series=by_user("title", "series"), pb_custom=custom_column("calendar"),
+                               username=session["username"])
+
+@app.route("/accessory/edit")
+@login_required
+def edit_accessory():
+    accessory = db.execute("SELECT * FROM accessory WHERE id = ?", request.args.get("id"))
+    if accessory is None or len(accessory) == 0:
+        return redirect("/accessory")
+
+    book_id = db.execute("SELECT book_id FROM accessory WHERE id = ?",  request.args.get("id"))[0]["book_id"]
+    if book_id is None:
+        flash("Invalid book.", "Error")
+        return redirect("/accessory")
+
+    return redirect("/library/edit?id=" +str(book_id))
 
 
 # </editor-fold>
@@ -605,7 +763,7 @@ def logout():
 
 # </editor-fold>
 
-# <editor-fold desc="Mass upload functions">
+# <editor-fold desc="File functions">
 @app.route("/mass-upload", methods=['POST'])
 @login_required
 def mass_upload():
@@ -631,8 +789,6 @@ def mass_upload():
         flash("Wrong table.", "Error")
         return redirect("/library")
 
-
-# </editor-fold>
 
 @app.route("/export-data")
 @login_required
@@ -687,6 +843,9 @@ def get_template():
 
     flash(f"Your templated is downloaded in {os.path.realpath(file.name)}", "Success")
     return redirect("/library")
+
+
+# </editor-fold>
 
 
 app.jinja_env.globals.update(column_name=column_name)

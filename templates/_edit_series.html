@@ -1,0 +1,75 @@
+<div class="fade show" tabindex="-1" id="edit-series" data-bs-backdrop="static">
+    <div class="modal-dialog" id="modal-template">
+        <div class="modal-content rounded-5 shadow px-5">
+            <div class="container my-5">
+                <!-- Form -->
+                <form action="/series/edit" method="post" id="edit-series-form"
+                      class="needs-validation accordion"
+                      autocomplete="off">
+                    <h6 class="mb-3">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#series_detail" aria-expanded="true"
+                                aria-controls="series_detail">Details
+                        </button>
+                    </h6>
+                    <div class="row g-3 accordion-collapse collapse show" id="series_detail">
+                        <div class="col-md-7">
+                            <label for="sr_name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="sr_name" name="title"
+                                   value='{{data["title"]}}'
+                                   required>
+                            <div class="invalid-feedback">
+                                Please enter the series' title.
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="sr_status" class="form-label">Status</label>
+                            <select class="form-select" id="sr_status" name="status" value='{{data["status"]}}'>
+                                <option></option>
+                                <option value="End">End</option>
+                                <option value="Hiatus">Hiatus</option>
+                                <option value="Ongoing">Ongoing</option>
+                                <option value="Drop">Drop</option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <label for="sr_end" class="form-label">End Volume</label>
+                            <input type="number" class="form-control" id="sr_end" name="end_vol"
+                                   value='{{data["end_vol"]}}'>
+                        </div>
+                    </div>
+
+                    <h6 class="mb-3 mt-3">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#sr_user_custom" aria-expanded="true"
+                                aria-controls="sr_user_custom">User Custom
+                        </button>
+                    </h6>
+                    <div class="row g-3 mt-0 accordion-collapse collapse show" id="sr_user_custom">
+                        {% for sr_column in sr_custom %}
+                        <div class="my-3">
+                            <div class="col-sm-6">
+                                <label for="{{ sr_column }}" class="form-label">{{ sr_column }}</label>
+                                <input type="text" class="form-control" id="{{ sr_column }}" name="{{ sr_column }}"
+                                       value='{{data["sr_column"]}}'>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-light me-3 border-primary"
+                                onclick="window.location.replace('/series')" type="button">Cancel</button>
+                        <button class="btn btn-light me-3 border-primary" type="reset">Reset</button>
+                        <button class="btn btn-secondary" type="submit">Save</button>
+                    </div>
+                </form>
+                <form action="/delete-series" method="post" id="delete-item">
+                    <input type="hidden" name='{{data["id"]}}'>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

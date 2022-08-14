@@ -1,0 +1,207 @@
+<div class="fade show" tabindex="-1" id="edit-book" data-bs-backdrop="static">
+    <div class="modal-dialog" id="modal-template">
+        <div class="modal-content rounded-5 shadow px-5">
+            <div class="container my-5">
+                <!-- Form -->
+                <form action="/library/edit" method="post" id="edit-book-form"
+                      class="needs-validation accordion tab-pane fade show active"
+                      autocomplete="off"
+                      novalidate role="tabpanel">
+                    <h6 class="mb-3">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#main" aria-expanded="true"
+                                aria-controls="main">Main
+                        </button>
+                    </h6>
+                    <div class="row g-3 accordion-collapse collapse show" id="main">
+                        <input type="hidden" name="id" value='{{data["id"]}}'>
+                        <div class="col-7">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title"
+                                   value='{{data["title"]}}' required>
+                            <div class="invalid-feedback">
+                                Please enter the book's title.
+                            </div>
+                        </div>
+
+                        <div class="col-sm-5">
+                            <label for="isbn" class="form-label">ISBN</label>
+                            <input type="number" class="form-control" id="isbn" name="isbn"
+                                   value='{{data["isbn"]}}'>
+                        </div>
+
+                        <div class="col-sm-5">
+                            <label for="author" class="form-label">Author(s)</label>
+                            <input type="text" class="form-control" id="author" name="author"
+                                   value='{{data["author"]}}'>
+                        </div>
+
+                        <div class="col-sm-5">
+                            <label for="series" class="form-label">Series</label>
+                            <input class="form-control" list="series-list" name="series" id="series"
+                                   value='{{data["series.title"]}}'>
+                            <datalist id="series-list">
+                                <option></option>
+                                {% for sr_title in series %}
+                                <option>{{ sr_title }}</option>
+                                {% endfor %}
+                            </datalist>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <label for="volume" class="form-label">Volume</label>
+                            <input type="number" class="form-control" id="volume" name="volume"
+                                   value='{{data["volume"]}}'>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label for="publisher" class="form-label">Publisher</label>
+                            <input type="text" class="form-control" id="publisher" name="publisher"
+                                   value='{{data["publisher"]}}'>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label for="year" class="form-label">Year</label>
+                            <input type="number" class="form-control" id="year" name="year" value='{{data["year"]}}'>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label for="edition" class="form-label">Edition</label>
+                            <input type="text" class="form-control" id="edition" name="edition"
+                                   value='{{data["edition"]}}'>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="category" class="form-label">Category</label>
+                            <input class="form-control" list="category" name="category" value='{{data["category"]}}'>
+                            <datalist id="category">
+                                <option></option>
+                                {% for category in categories %}
+                                <option>{{ category }}</option>
+                                {% endfor %}
+                            </datalist>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label for="page" class="form-label">Pages</label>
+                            <input type="number" class="form-control" id="page" name="page" value='{{data["page"]}}'>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label for="price" class="form-label">Price</label>
+                            <input type="number" class="form-control" id="price" name="price" value='{{data["price"]}}'">
+                        </div>
+                    </div>
+
+                    <h6 class="mb-3 mt-3">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#more" aria-expanded="true"
+                                aria-controls="more">More Details
+                        </button>
+                    </h6>
+                    <div class="row g-3 mt-0 accordion-collapse collapse show" id="more">
+                        <div class="col-sm-3">
+                            <label for="country" class="form-label">Country</label>
+                            <input type="text" class="form-control" id="country" name="country"
+                                   value='{{data["country"]}}'>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label for="originLang" class="form-label">Original Language</label>
+                            <input type="text" class="form-control" id="originLang" name="original_language"
+                                   value='{{data["original_language"]}}'>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label for="transLang" class="form-label">Translated Language</label>
+                            <input type="text" class="form-control" id="transLang" name="translated_language"
+                                   value='{{data["translated_language"]}}'>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label for="cover" class="form-label">Cover</label>
+                            <input type="text" class="form-control" id="cover" name="cover" value='{{data["cover"]}}'>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <label for="ratings" class="form-label">My Ratings</label>
+                            <input type="number" class="form-control" id="ratings" name="ratings"
+                                   value='{{data["ratings"]}}'>
+                        </div>
+
+                        <div class="col-sm-5">
+                            <label for="status" class="form-label">Status</label>
+                            <input type="text" class="form-control" id="status" name="status"
+                                   value='{{data["book.status"]}}'>
+                        </div>
+
+                        <div class="col-sm-5">
+                            <label for="note" class="form-label">Note</label>
+                            <input type="text" class="form-control" id="note" name="note"
+                                   value='{{data["note"]}}'>
+                        </div>
+                    </div>
+
+                    <h6 class="mb-3 mt-3">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#accessories" aria-expanded="true"
+                                aria-controls="accessories">Accessories
+                        </button>
+                    </h6>
+                    <div class="row g-3 mt-0 accordion-collapse collapse show" id="accessories">
+
+                        <div class="col-sm-5">
+                            <label for="ac_type" class="form-label">Type</label>
+                            <input type="text" class="form-control" id="ac_type" name="ac_type"
+                                   value='{{data["type"]}}'>
+                        </div>
+
+                        <div class="col-sm-1">
+                            <label for="ac_qty" class="form-label">Qty</label>
+                            <input type="number" class="form-control" id="ac_qty" name="ac_qty"
+                                   value='{{data["qty"]}}'>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label for="ac_material" class="form-label">Material</label>
+                            <input type="text" class="form-control" id="ac_material" name="ac_material"
+                                   value='{{data["material"]}}'>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label for="ac_status" class="form-label">Status</label>
+                            <input type="text" class="form-control" id="ac_status" name="ac_status"
+                                   value='{{data["ac.status"]}}'>
+                        </div>
+                    </div>
+
+                    <h6 class="mb-3 mt-3">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#user_custom" aria-expanded="true"
+                                aria-controls="user_custom">User Custom
+                        </button>
+                    </h6>
+                    <div class="row g-3 mt-0 accordion-collapse collapse show" id="user_custom">
+                        {% for column in custom %}
+                        <div class="col-lg-6 mt-3 mb-4">
+                            <label for="{{ column }}" class="form-label">{{ column_name(column) }}</label>
+                            <input type="text" class="form-control" id="{{ column }}" name="{{ column }}"
+                                   value='{{data[column]}}'>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-light me-3 border-primary"
+                                onclick="window.location.replace('/library')" type="button">Cancel</button>
+                        <button class="btn btn-light me-3 border-primary" type="reset">Reset</button>
+                        <button class="btn btn-secondary" type="submit" form="edit-book-form">Save</button>
+                    </div>
+                </form>
+                <form action="/delete-book" method="post" id="delete-item">
+                    <input type="hidden" name='{{data["id"]}}'>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

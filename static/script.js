@@ -1,7 +1,5 @@
 // Initialize tooltips
-$(document).ready(function () {
-    $('[data-bs-toggle=tooltip]').tooltip();
-});
+$(document).ready(function () { $('[data-bs-toggle=tooltip]').tooltip();});
 
 // Sort columns
 function sort(column) {
@@ -62,28 +60,13 @@ function toggle(boxName, mode) {
 
 }
 
-// Change calendar display
-function display_mode() {
-    let mode = document.getElementById("display-content").getAttribute("mode");
-    if (mode === "calendar") {
-        window.location.replace('/calendar?display=table');
-    } else {
-        window.location.replace('/calendar?display=calendar');
-    }
+// Edit data modal
+function edit(id) {
+    current =  window.location.href.split('?')[0].split('#')[0]
+    return window.location.replace(current + "/edit?id=" + id)
 }
-document.addEventListener("DOMContentLoaded", function () {
-    let mode = document.getElementById("display-content").getAttribute("mode");
-    let button = document.getElementById("display-button");
-    let deleteBtn = document.getElementById("delete-button");
-    if (mode === "calendar") {
-        button.innerHTML = '<i class="fa-solid fa-calendar-check"></i>';
-        deleteBtn.style.display = "none";
-    } else {
-        button.innerHTML = '<i class="fa-solid fa-table"></i>';
-        deleteBtn.style.display = "inline-block";
-    }
-})
 
+//<editor-fold desc="Login modal">
 // Change login modal to login
 function login() {
     fetch('login')
@@ -118,9 +101,32 @@ function reset_pass() {
         .then(response => response.text())
         .then(text => document.querySelector("#modal-template").innerHTML = text);
 }
+//</editor-fold>
 
 
 //<editor-fold desc="Calendar
+// Change calendar display
+function display_mode() {
+    let mode = document.getElementById("display-content").getAttribute("mode");
+    if (mode === "calendar") {
+        window.location.replace('/calendar?display=table');
+    } else {
+        window.location.replace('/calendar?display=calendar');
+    }
+}
+document.addEventListener("DOMContentLoaded", function () {
+    let mode = document.getElementById("display-content").getAttribute("mode");
+    let button = document.getElementById("display-button");
+    let deleteBtn = document.getElementById("delete-button");
+    if (mode === "calendar") {
+        button.innerHTML = '<i class="fa-solid fa-calendar-check"></i>';
+        deleteBtn.style.display = "none";
+    } else {
+        button.innerHTML = '<i class="fa-solid fa-table"></i>';
+        deleteBtn.style.display = "inline-block";
+    }
+})
+
 /* This calendar is based on tutorial:
    How to Make a Monthly Calendar With Real Data by Mateusz Rybczonek
    https://css-tricks.com/how-to-make-a-monthly-calendar-with-real-data/"> */

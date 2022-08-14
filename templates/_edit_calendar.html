@@ -1,0 +1,77 @@
+<div class="fade show" tabindex="-1" id="edit-log" data-bs-backdrop="static">
+    <div class="modal-dialog" id="modal-template">
+        <div class="modal-content rounded-5 shadow px-5">
+            <div class="container my-5">
+                <!-- Form -->
+                <form action="/edit-calendar" method="post" id="publish-form"
+                      class="needs-validation accordion tab-pane fade"
+                      autocomplete="off"
+                      novalidate role="tabpanel">
+                    <h6 class="mb-3">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#publish_detail" aria-expanded="true"
+                                aria-controls="publish_detail">Publish Date
+                        </button>
+                    </h6>
+                    <div class="row g-3 accordion-collapse collapse show" id="publish_detail">
+                        <div class="col-md-3">
+                            <label for="pb_date" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="pb_date"
+                                   value='{{data["date"]}}' name="date"
+                                   required>
+                            <div class="invalid-feedback">
+                                Please enter the release date.
+                            </div>
+                        </div>
+
+                        <div class="col-sm-8">
+                            <label for="pb_series" class="form-label">Series</label>
+                            <input class="form-control" list="series-list"
+                                   value='{{data["series"]}}' name="series" id="pb_series">
+                            <datalist id="series-list">
+                                <option></option>
+                                {% for sr_title in series %}
+                                <option>{{ sr_title }}</option>
+                                {% endfor %}
+                            </datalist>
+                        </div>
+
+                        <div class="col-sm-1">
+                            <label for="pb_vol" class="form-label">Volume</label>
+                            <input type="number" class="form-control" id="pb_vol"
+                                   value='{{data["volume"]}}' name="volume" placeholder="7">
+                        </div>
+                    </div>
+
+                    <h6 class="mb-3 mt-3">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#pb_user_custom" aria-expanded="true"
+                                aria-controls="pb_user_custom">User Custom
+                        </button>
+                    </h6>
+                    <div class="row g-3 mt-0 accordion-collapse collapse show" id="pb_user_custom">
+                        {% for pb_column in pb_custom %}
+                        <div class="my-3">
+                            <div class="col-sm-6">
+                                <label for="{{ pb_column }}" class="form-label">{{ pb_column }}</label>
+                                <input type="text" class="form-control" name="{{ pb_column }}"
+                                       value='{{data["pb_column"]}}' id="{{ pb_column }}">
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-light me-3 border-primary"
+                                onclick="window.location.replace('/calendar')" type="button">Cancel</button>
+                        <button class="btn btn-light me-3 border-primary" type="reset">Reset</button>
+                        <button class="btn btn-secondary" type="submit">Insert</button>
+                    </div>
+                </form>
+                <form action="/delete-calendar" method="post" id="delete-item">
+                    <input type="hidden" name='{{data["id"]}}'>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

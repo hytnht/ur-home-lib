@@ -1,0 +1,83 @@
+<div class="fade show" tabindex="-1" id="edit-log" data-bs-backdrop="static">
+    <div class="modal-dialog" id="modal-template">
+        <div class="modal-content rounded-5 shadow px-5">
+            <div class="container my-5">
+                <!-- Form -->
+                <form action="/edit-log" method="post" id="edit-log-form"
+                      class="needs-validation accordion tab-pane fade"
+                      autocomplete="off"
+                      novalidate role="tabpanel">
+                    <h6 class="mb-3">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#log_detail" aria-expanded="true"
+                                aria-controls="log_detail">Log
+                        </button>
+                    </h6>
+                    <div class="row g-3 accordion-collapse collapse show" id="log_detail">
+                        <div class="col-md-3">
+                            <label for="lg_date" class="form-label">Date</label>
+                            <input type="date" class="form-control today-date" id="lg_date"
+                                   value='{{data["date"]}}' name="date" required>
+                            <div class="invalid-feedback">
+                                Please enter the date.
+                            </div>
+                        </div>
+
+                        <div class="col-sm-9">
+                            <label for="lg_book" class="form-label">Book</label>
+                            <input class="form-control" list="books-list"
+                                   value='{{data["title"]}}' name="title" id="lg_book">
+                            <datalist id="books-list">
+                                <option></option>
+                                {% for title in books %}
+                                <option>{{ title }}</option>
+                                {% endfor %}
+                            </datalist>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label for="lg_act" class="form-label">Activity</label>
+                            <input type="text" class="form-control"
+                                   value='{{data["activities"]}}' id="lg_act" name="activities">
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label for="lg_borrower" class="form-label">Borrower</label>
+                            <input type="text" class="form-control"
+                                   value='{{data["borrower"]}}' id="lg_borrower" name="borrower">
+                        </div>
+                    </div>
+
+                    <h6 class="mb-3 mt-3">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#pb_user_custom" aria-expanded="true"
+                                aria-controls="pb_user_custom">User Custom
+                        </button>
+                    </h6>
+
+                    <div class="row g-3 mt-0 accordion-collapse collapse show" id="lg_user_custom">
+                        {% for lg_column in lg_custom %}
+                        <div class="my-3">
+                            <div class="col-sm-6">
+                                <label for="{{ lg_column }}" class="form-label">{{ lg_column }}</label>
+                                <input type="text" class="form-control" name="{{ lg_column }}"
+                                       value='{{data["lg_column"]}}' id="{{ lg_column }}">
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-light me-3 border-primary"
+                                onclick="window.location.replace('/log')" type="button">Cancel</button>
+                        <button class="btn btn-light me-3 border-primary" type="reset">Reset</button>
+                        <button class="btn btn-secondary" type="submit">Save</button>
+                    </div>
+                </form>
+                <form action="/delete-log" method="post" id="delete-item">
+                    <input type="hidden" name='{{data["id"]}}'>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
