@@ -11,6 +11,8 @@
   "dependencies": {
     "bootstrap": "^5.2.0",
     "dayjs": "^1.11.5",
-    "sass": "^1.54.4"
+    "jquery": "^3.6.0",
+    "sass": "^1.54.4",
+    "sqlite3": "^5.0.11"
   }
 }
