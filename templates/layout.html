@@ -35,31 +35,19 @@
         <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/">
             <img alt="Logo" height="35rem" src="../static/img/full-logo.png"></a>
     </div>
-
-    <ul class="nav nav-pills">
-        <!--        Notification-->
-        <li class="nav-item dropdown me-5">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
-               aria-expanded="false"><i class="fa-solid fa-bell"></i></a>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Noti</a></li>
-            </ul>
-        </li>
-
-        <!--        User-->
-        <li class="nav-item dropdown me-5">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Hi,
-                {{ username }}!</a>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/export-data">Export data</a></li>
-                <li><a class="dropdown-item" href="/download-template">Get upload template</a></li>
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
-                <li><a class="dropdown-item" href="/log-out">Sign out</a></li>
-            </ul>
-        </li>
-    </ul>
+    <!--        User-->
+    <div class="nav-item dropdown me-5">
+        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Hi,
+            {{ username }}!</a>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="/export-data">Export data</a></li>
+            <li><a class="dropdown-item" href="/download-template">Get upload template</a></li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="/log-out">Sign out</a></li>
+        </ul>
+    </div>
 </header>
 
 <!--Main-->
@@ -133,7 +121,7 @@
                     </button>
 
                     <!--Delete button-->
-                    <button id = "delete-button" form="delete-item"
+                    <button id="delete-button" form="delete-item"
                             onclick="return confirm('Do you really want to delete?')"
                             type="submit"
                             class="btn btn-sm btn-outline-secondary me-2 px-3">
@@ -150,7 +138,7 @@
 
             <!--            Content-->
             {% block content %}
-                {% include '%s' % content %}
+            {% include '%s' % content %}
             {% endblock content %}
 
         </div>
