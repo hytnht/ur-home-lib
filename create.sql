@@ -13,10 +13,10 @@ create table series
     id      INTEGER not null
         primary key
         unique,
+    title   TEXT,
     current INTEGER,
     end_vol INTEGER,
     status  BOOLEAN,
-    title   TEXT,
     user_id INTEGER not null
         references user
 );
@@ -30,25 +30,23 @@ create table book
     title               TEXT    not null,
     author              TEXT,
     publisher           TEXT,
+    volume              INTEGER,
     category            TEXT,
+    year                INTEGER,
+    edition             TEXT,
+    page                INTEGER,
+    cover               TEXT,
+    status              TEXT,
+    ratings             FLOAT,
+    country             TEXT,
     original_language   TEXT,
     translated_language TEXT,
     price               INTEGER,
-    year                INTEGER,
-    page                INTEGER,
     note                TEXT,
     series_id           INTEGER
         references series,
     user_id             INTEGER
-        references user,
-    edition             TEXT,
-    volume              INTEGER,
-    country             TEXT,
-    cover               TEXT,
-    status              TEXT,
-    ratings             FLOAT,
-    uc_custom1          TEXT,
-    uc_custom2          TEXT
+        references user
 );
 
 create table accessory

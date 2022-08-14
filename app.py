@@ -48,7 +48,9 @@ def index():
 @login_required
 def library():
     # Query database
-    books = db.execute("SELECT * FROM book WHERE user_id = ?", session["user_id"])
+    books = db.execute("SELECT book.*, series.title as series FROM book "
+                       "LEFT JOIN series ON book.series_id = series.id "
+                       "WHERE book.user_id = ?", session["user_id"])
 
     # If database was not blank
     if len(books) > 0:
@@ -68,7 +70,9 @@ def library():
 @login_required
 def series():
     # Query database
-    series = db.execute("SELECT * FROM series WHERE user_id = ?", session["user_id"])
+    series = db.execute("SELECT series.*, sm.volume as missing_vol FROM series"
+                        " LEFT JOIN series_missing sm ON series.id = sm.series_id"
+                        " WHERE user_id = ?", session["user_id"])
 
     # If database was not blank
     if len(series) > 0:
@@ -111,7 +115,7 @@ def accessory():
 @login_required
 def log():
     # Query database
-    log = db.execute("SELECT log.*, book.title FROM log JOIN book ON log.book_id = book.id WHERE user_id = ?",
+    log = db.execute("SELECT log.*, book.title FROM log LEFT JOIN book ON log.book_id = book.id WHERE user_id = ?",
                      session["user_id"])
 
     # If database was not blank
@@ -132,7 +136,7 @@ def log():
 @login_required
 def calendar():
     calendar = db.execute("SELECT rc.*, series.title FROM release_calendar rc "
-                          "JOIN series ON rc.series_id = series.id WHERE series.user_id = ?", session["user_id"])
+                          "LEFT JOIN series ON rc.series_id = series.id WHERE series.user_id = ?", session["user_id"])
     if request.args.get("display") == "calendar":
         return render_template("calendar.html", content="_calendar.html", mode="calendar", data=json.dumps(calendar),
                                username=session["username"])
@@ -634,11 +638,11 @@ def mass_upload():
 @login_required
 def export():
     book_data = db.execute("SELECT * FROM book "
-                           "JOIN accessory ON accessory.book_id = book.id "
-                           "JOIN log ON log.book_id = book.id "
+                           "LEFT JOIN accessory ON accessory.book_id = book.id "
+                           "LEFT JOIN log ON log.book_id = book.id "
                            "WHERE user_id = ?", session["user_id"])
     series_data = db.execute("SELECT * FROM series "
-                             "JOIN release_calendar rc ON rc.series_id = series.id "
+                             "LEFT JOIN release_calendar rc ON rc.series_id = series.id "
                              "WHERE user_id = ?", session["user_id"])
 
     with open("./static/export/book_data.csv", "w") as file_book:
@@ -661,20 +665,20 @@ def export():
 @app.route("/download-template")
 @login_required
 def get_template():
-    book = db.execute("SELECT * FROM book WHERE user_id = ?", session["user_id"])
-    series = db.execute("SELECT * FROM series WHERE user_id = ?", session["user_id"])
-    calendar = db.execute("SELECT rc.* FROM release_calendar rc "
-                          "JOIN series ON rc.series_id = series.id"
-                          " WHERE user_id = ?", session["user_id"])
+    book = ['isbn', 'title', 'author', 'publisher', 'category', 'original_language', 'translated_language',
+            'price', 'year', 'page', 'note', 'series_id', 'edition', 'volume', 'country', 'cover', 'status',
+            'ratings'] + custom_column("book")
+    series = ['current', 'end_vol', 'status', 'title'] + custom_column("series")
+    calendar = ['publisher', 'volume', 'date'] + custom_column("calendar")
 
     with open("./static/export/template.csv", "w") as file:
         writer = csv.writer(file, delimiter=';')
-        writer.writerow("Columns for book table:")
-        writer.writerow(book[0].keys())
-        writer.writerow("Columns for series table:")
-        writer.writerow(series[0].keys())
-        writer.writerow("Columns for calendar table:")
-        writer.writerow(calendar[0].keys())
+        file.write("Columns for book table: \n")
+        writer.writerow(book)
+        file.write("Columns for series table: \n")
+        writer.writerow(series)
+        file.write("Columns for calendar table (date format YYYY-MM-DD: \n")
+        writer.writerow(calendar)
 
     flash(f"Your templated is downloaded in {os.path.realpath(file.name)}", "Success")
     return redirect("/library")
