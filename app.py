@@ -482,7 +482,7 @@ def register():
             return redirect("/")
 
         # Insert new user to database
-        new_user = db.execute("INSERT INTO user (email, password, date) VALUES(?, ?)", email,
+        new_user = db.execute("INSERT INTO user (email, password, date) VALUES(?, ?, ?)", email,
                               generate_password_hash(password), datetime.now())
 
         # Send email

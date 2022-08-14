@@ -17,9 +17,9 @@ source .venv/bin/activate
 ```
 Create environment variables `env.py`:
 ```shell script
-$ code env.py
+$ touch env.py
 ```
-Assign your email and passwords to variables in file `.env `:
+Assign your email and passwords to variables in file `env.py`:
 ```python
 import os
 def setVar():
