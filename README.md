@@ -6,20 +6,20 @@ Make sure your computer have installed and activated **python3.10** or above, **
 ## Clone
 Clone this repository to your local computer.
 ```shell script
-https://github.com/hytnht/ur-home-lib.git
-cd ur-hone-lib
+$ https://github.com/hytnht/ur-home-lib.git
+$ cd ur-hone-lib
 ```
 ##Configuration
-Create and activate virtualenv:
+Create and activate virtual environment `venv`:
 ```shell script
-python3 -m venv venv
-source .venv/bin/activate
+$ python3 -m venv venv
+$ source .venv/bin/activate
 ```
 Create environment variables `.env`:
 ```shell script
-$touch .env
+$ touch .env
 ```
-Assign your email and passwords to variables in file `.env `:
+Assign your email and passwords variables in file `.env `:
 ```shell script
 import os
 def setVar():
@@ -31,28 +31,28 @@ def setVar():
 ##Install dependencies
 Install python requirements in root folder:
 ```shell script
-python3 -m pip install -r requirements.tx
+$ python3 -m pip install -r requirements.tx
 ```
 Instal **nodejs** package in `static` folder:
 ```shell script
-cd static
-npm install
+$ cd static
+$ npm install
 ```
-## Compile SCSS:
+## Compile SCSS
 Compile `scss` to `css` stylesheet:
 ```shell script
-sass --watch style.scss style.css
+$ sass --watch style.scss style.css
 ```
 ## Create database
 Create table using **sqlite3**:
 ```shell script
-sqlite3 database.db < create.sql
+$ sqlite3 database.db < create.sql
 ```
 ## Run
 Run project using Flask in root folder:
 ```shell script
-cd ..
-flask run 
+$ cd ..
+$ flask run 
 ```
 
 
