@@ -84,24 +84,25 @@ def series():
 def accessory():
     # Query database
     accessories = db.execute(
-        "SELECT type,qty,material,accessory.status,title FROM book "
+        "SELECT accessory.*, book.title FROM book "
         "JOIN accessory ON book.id = accessory.book_id WHERE book.user_id = ?",
         session["user_id"])
 
     # If database was not blank
     if len(accessories) > 0:
-        columns = accessories[0].keys()
-        return render_template("accessories.html", content="_table.html", table_head=columns, table_data=accessories,
+        columns = [key for key in accessories[0].keys() if "id" not in key]
+        return render_template("accessory.html", content="_table.html", table_head=columns, table_data=accessories,
                                series=query_title("series"), books=query_title("book"), delete="accessory",
                                username=session["username"])
 
-    return render_template("accessories.html", content="_blank.html", username=session["username"])
+    return render_template("accessory.html", content="_blank.html", username=session["username"])
 
 
 @app.route("/log")
 def log():
     # Query database
-    log = db.execute("SELECT * FROM log JOIN book ON log.book_id = book.id WHERE user_id = ?", session["user_id"])
+    log = db.execute("SELECT log.*, book.title FROM log JOIN book ON log.book_id = book.id WHERE user_id = ?",
+                     session["user_id"])
 
     # If database was not blank
     if len(log) > 0:
@@ -115,9 +116,18 @@ def log():
 
 @app.route("/calendar")
 def calendar():
-    return render_template("calendar.html", content="_calendar.html", username=session["username"])
-
-    return render_template("library.html", content="_blank.html", username=session["username"])
+    if request.args.get("display") == "calendar":
+        return render_template("calendar.html", content="_calendar.html", mode="calendar", username=session["username"])
+    else:
+        calendar = db.execute("SELECT rc.*, series.title FROM release_calendar rc "
+                              "JOIN series ON rc.series_id = series.id WHERE series.user_id = ?", session["user_id"])
+        if len(calendar) > 0:
+            columns = [key for key in calendar[0].keys() if "id" not in key]
+            return render_template("calendar.html", content="_table.html", mode="table",
+                                   table_head=columns, table_data=calendar,
+                                   series=query_title("series"), books=query_title("book"), delete="calendar",
+                                   username=session["username"])
+        return render_template("calendar.html", content="_blank.html", mode="table",username=session["username"])
 
 
 @app.route("/mass-upload")

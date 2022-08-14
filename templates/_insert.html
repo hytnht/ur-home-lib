@@ -280,7 +280,7 @@
                     </form>
 
                     <!-- Publish  -->
-                    <form action="/new-publish" method="post" id="publish-form"
+                    <form action="/new-calendar" method="post" id="publish-form"
                           class="needs-validation accordion tab-pane fade"
                           autocomplete="off"
                           novalidate role="tabpanel">
@@ -293,7 +293,7 @@
                         <div class="row g-3 accordion-collapse collapse show" id="publish_detail">
                             <div class="col-md-3">
                                 <label for="pb_date" class="form-label">Date</label>
-                                <input type="datetime-local" class="form-control" id="pb_date" name="date"
+                                <input type="date" class="form-control" id="pb_date" name="date"
                                        required>
                                 <div class="invalid-feedback">
                                     Please enter the release date.
@@ -348,7 +348,7 @@
                         <div class="row g-3 accordion-collapse collapse show" id="log_detail">
                             <div class="col-md-3">
                                 <label for="lg_date" class="form-label">Date</label>
-                                <input type="datetime-local" class="form-control today-date" id="lg_date" name="date" required>
+                                <input type="date" class="form-control today-date" id="lg_date" name="date" required>
                                 <div class="invalid-feedback">
                                     Please enter the date.
                                 </div>

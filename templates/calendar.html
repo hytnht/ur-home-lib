@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Calendar
+{% endblock title %}
+
+{% block actions %}
+<li class="nav-item">
+    <a class="nav-link" href="/calendar-column">
+        <i class="fa-solid fa-table-columns me-3"></i>
+        Insert column
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link me-3" href="/upload-calendar">
+        <i class="fa-solid fa-file-arrow-up me-3"></i>
+        Mass upload
+    </a>
+</li>
+{% endblock actions %}
+
+{% block buttons %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ self.title() }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0" id="sub-btn">
+        <!--Show columns drowpdown-->
+        <button id="display-button" onclick="display_mode()" type="button"
+                class="btn btn-sm btn-outline-secondary me-2 px-3" id="display-button">
+            <i class="fa-solid fa-table"></i>
+        </button>
+
+        <!--Delete button-->
+        <button id = "delete-button" form="delete-item"
+                onclick="return confirm('Do you really want to delete?')"
+                type="submit"
+                class="btn btn-sm btn-outline-secondary me-2 px-3">
+            <i class="fa-solid fa-minus"></i>
+        </button>
+
+        <!--Insert items button-->
+        <button type="button" class="btn btn-sm btn-outline-secondary me-2 px-3" data-bs-toggle="modal"
+                data-bs-target="#insert-modal">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+    </div>
+</div>
+{% endblock buttons %}
+
+{% block content %}
+<div id="display-content" mode={{ mode }}>
+    {{ super() }}
+</div>
+{% endblock content %}

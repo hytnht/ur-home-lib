@@ -34,7 +34,7 @@ function sort(column) {
 }
 
 // Select all checkboxes which classes included 'c' (check) + checkbox's name
-function checkAll(box, toggleMode) {
+function check_all(box, toggleMode) {
     let col = document.getElementsByClassName('c-' + box.name)
     for (let i = 0; i < col.length; i++) {
         col[i].checked = box.checked
@@ -55,6 +55,24 @@ function toggle(boxName, mode) {
         for (let i = 0; i < col.length; i++)
             col[i].style.display = 'none'
 
+}
+
+// Change calendar display
+function display_mode() {
+    let mode = document.getElementById("display-content").getAttribute("mode");
+    let button = document.getElementById("display-button");
+    let deleteBtn = document.getElementById("delete-button");
+    if (mode === "calendar") {
+        button.innerHTML = '<i class="fa-solid fa-calendar-check"></i>';
+        button.setAttribute("name", "display-table");
+        deleteBtn.style.display = "inline-block";
+        window.location.replace('/calendar?display=table');
+    } else {
+        button.innerHTML = '<i class="fa-solid fa-table"></i>';
+        button.setAttribute("name", "display-calendar");
+        deleteBtn.style.display = "none";
+        window.location.replace('/calendar?display=calendar');
+    }
 }
 
 // Change login modal to login
@@ -93,3 +111,133 @@ function reset_pass() {
 }
 
 
+/* Calendar
+This calendar is based on tutorial:
+    How to Make a Monthly Calendar With Real Data by Mateusz Rybczonek
+    https://css-tricks.com/how-to-make-a-monthly-calendar-with-real-data/
+ */
+dayjs.extend(window.dayjs_plugin_weekday)
+dayjs.extend(window.dayjs_plugin_weekOfYear);
+
+document.addEventListener("DOMContentLoaded", function () {
+    const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const TODAY = dayjs().format("YYYY-MM-DD");
+    const INITIAL_YEAR = dayjs().format("YYYY");
+    const INITIAL_MONTH = dayjs().format("M");
+    let showMonth = dayjs(new Date(INITIAL_YEAR, INITIAL_MONTH - 1, 1));
+    let currentList, preList, nextList;
+
+    WEEKDAYS.forEach((weekday) => {
+        let headCell = document.createElement("li");
+        headCell.innerText = weekday;
+        document.getElementById("calendar-header").appendChild(headCell);
+    });
+
+    calendar();
+    switch_month();
+
+    function calendar(year = INITIAL_YEAR, month = INITIAL_MONTH) {
+        let body = document.getElementById("calendar-body");
+        document.getElementById("current-month").innerText = dayjs(new Date(year, month - 1)).format("MMMM YYYY");
+
+        while (body.firstElementChild) {
+            body.firstElementChild.remove();
+        }
+
+        currentList = current_list(year, month, dayjs(`${year}-${month}-01`).daysInMonth());
+        preList = previous_list(year, month);
+        nextList = next_list(year, month);
+
+        [...preList, ...currentList, ...nextList].forEach((day) => {
+            append_cell(day, body);
+        });
+    }
+
+    function append_cell(day, body) {
+        let bodyCell = document.createElement("li");
+        bodyCell.classList.add("calendar-cell");
+        let data = document.createElement("span");
+        data.innerText = day.number;
+        let reminder = document.createElement("div")
+        let id = showMonth.format("YYYY-MM") + String(day.number).padStart(2,"0");
+        console.log(id)
+        reminder.innerHTML = '<div id="+id+"></div><script type="text/javascript"> calendar_data({{ data|tojson }})</script>'
+        bodyCell.appendChild(data).appendChild(reminder);
+        body.appendChild(bodyCell);
+
+        if (!day.current) {
+            bodyCell.classList.add("other-day");
+        }
+        if (day.date === TODAY) {
+            bodyCell.classList.add("today");
+        }
+    }
+
+    function calendar_data(data) {
+        for (let i = 0; i < data.length; i++) {
+            let element = document.getElementById(data[i]["date"])
+            let series = document.createElement("span")
+            series.innerText = data[i]["title"]
+            element.appendChild(series)
+        }
+    }
+    function current_list(year, month) {
+        return [...Array(dayjs(`${year}-${month}-01`).daysInMonth())].map((day, index) => {
+            return {
+                date: dayjs(`${year}-${month}-${index + 1}`).format("YYYY-MM-DD"),
+                number: index + 1,
+                current: true
+            };
+        });
+    }
+
+    function previous_list(year, month) {
+        let firstWeekday = dayjs(currentList[0].date).weekday();
+        let preMonth = dayjs(`${year}-${month}-01`).subtract(1, "month");
+        let preVisible = 6
+        if (firstWeekday) {
+            preVisible = firstWeekday - 1
+        }
+        let preLastMon = dayjs(currentList[0].date).subtract(preVisible, "day").date();
+        return [...Array(preVisible)].map((day, index) => {
+            return {
+                date: dayjs(`${preMonth.year()}-${preMonth.month() + 1}-${preLastMon + index}`).format("YYYY-MM-DD"),
+                number: preLastMon + index,
+                current: false
+            };
+        });
+    }
+
+    function next_list(year, month) {
+        let lastWeekday = dayjs(`${year}-${month}-${currentList.length}`).weekday()
+        let nextMonth = dayjs(`${year}-${month}-01`).add(1, "month");
+        let nextVisible = lastWeekday
+        if (lastWeekday) {
+            nextVisible = 7 - lastWeekday
+        }
+        return [...Array(nextVisible)].map((day, index) => {
+            return {
+                date: dayjs(`${nextMonth.year()}-${nextMonth.month() + 1}-${index + 1}`).format("YYYY-MM-DD"),
+                number: index + 1,
+                current: false
+            };
+        });
+    }
+
+    function switch_month() {
+        document.getElementById("pre-month").addEventListener("click", function () {
+            showMonth = dayjs(showMonth).subtract(1, "month");
+            calendar(showMonth.format("YYYY"), showMonth.format("M"));
+        });
+
+        document.getElementById("this-month").addEventListener("click", function () {
+            showMonth = dayjs(new Date(INITIAL_YEAR, INITIAL_MONTH - 1, 1));
+            calendar(showMonth.format("YYYY"), showMonth.format("M"));
+        });
+
+        document.getElementById("next-month").addEventListener("click", function () {
+            showMonth = dayjs(showMonth).add(1, "month");
+            calendar(showMonth.format("YYYY"), showMonth.format("M"));
+        });
+    }
+})

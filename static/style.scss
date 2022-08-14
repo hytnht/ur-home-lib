@@ -127,15 +127,18 @@ footer img {
 #sidebarMenu * {
   color: $light;
 }
+main i {
+  width: 14px;
+}
 
 /* Content */
-
 @media (min-width: 992px) {
   .content-col {
     flex: 0 0 auto;
     width: 87.5%;
   }
 }
+
 /* Modal */
 .modal-link {
   font-size: .85rem;
@@ -185,8 +188,57 @@ th:not(.no-resize) {
 .no-resize {
   width: 25px;
 }
-thead:hover {
+//<editor-fold desc="Description">
+
+/* Cursor */
+i:hover, #this-month:hover, thead:hover {
   cursor: pointer;
 }
 
+/* Calendar */
+ol, li {
+  padding: 0;
+  list-style: none;
+}
 
+#calendar-header, #calendar-body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+#calendar-header * {
+  text-align: right;
+  padding-right: .5rem;
+}
+
+#calendar-body {
+  height: 100%;
+  border-top: solid 2px $shadow;
+}
+
+.calendar-cell {
+  text-align: end;
+  min-height: 6rem;
+  padding: 1rem;
+}
+
+.calendar-day span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+}
+
+.other-day {
+  background-color: $lightshadow;
+  color: $shadow;;
+}
+
+.today span {
+  color: white;
+  border-radius: 50%;
+  background-color: $dark;
+  padding: .4rem;
+}
+
+//</editor-fold>

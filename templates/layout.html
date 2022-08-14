@@ -71,32 +71,27 @@
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="/library">
-                            <i class="fa-solid fa-book me-3"></i>
-                            Library
+                            <i class="fa-solid fa-book me-3"></i>Library
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/accessory">
-                            <i class="fa-solid fa-bookmark me-3"></i>
-                            Accessory
+                            <i class="fa-solid fa-bookmark me-3"></i>Accessory
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/series">
-                            <i class="fa-solid fa-chart-simple me-3"></i>
-                            Series
+                            <i class="fa-solid fa-chart-simple me-3"></i>Series
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/calendar">
-                            <i class="fa-solid fa-clock-rotate-left me-3"></i>
-                            Calendar
+                        <a class="nav-link" href="/calendar?display=calendar">
+                            <i class="fa-solid fa-calendar me-3"></i>Calendar
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/log">
-                            <i class="fa-solid fa-location-dot me-3"></i>
-                            Log
+                            <i class="fa-solid fa-clock-rotate-left me-3"></i>Log
                         </a>
                     </li>
                 </ul>
@@ -115,6 +110,7 @@
 
         <div class="content-col col-md-10 ms-lg-auto ms-sm-auto px-md-4">
             <!--            Buttons-->
+            {% block buttons %}
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">{{ self.title() }}</h1>
                 <div class="btn-toolbar mb-2 mb-md-0" id="sub-btn">
@@ -126,7 +122,7 @@
                         </button>
                         <div class="dropdown-menu">
                             <div class="form-check dropdown-item px-lg-5">
-                                <input class="form-check-input" type="checkbox" onclick="checkAll(this,'table-cell')"
+                                <input class="form-check-input" type="checkbox" onclick="check_all(this,'table-cell')"
                                        name="col" checked>
                                 <label class="form-check-label fw-bold text-primary">Select All</label>
                             </div>
@@ -157,9 +153,12 @@
                     </button>
                 </div>
             </div>
+            {% endblock buttons %}
 
             <!--            Content-->
-            {% include '%s' % content %}
+            {% block content %}
+                {% include '%s' % content %}
+            {% endblock content %}
         </div>
     </div>
 </main>
