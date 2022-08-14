@@ -127,6 +127,7 @@ footer img {
 #sidebarMenu * {
   color: $light;
 }
+
 main i {
   width: 14px;
 }
@@ -188,6 +189,7 @@ th:not(.no-resize) {
 .no-resize {
   width: 25px;
 }
+
 //<editor-fold desc="Description">
 
 /* Cursor */
@@ -239,6 +241,7 @@ ol, li {
   background-color: $lightshadow;
   color: $shadow;
 }
+
 .today {
   background-color: $light;
 }

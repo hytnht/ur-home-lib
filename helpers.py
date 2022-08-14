@@ -6,14 +6,14 @@ from flask import request, session, flash
 db = SQL("sqlite:///database.db")
 
 
-def check_series(title, add):
-    series_id = db.execute("SELECT id FROM series WHERE title = ? AND user_id = ?", title, session["user_id"])
-    if not series_id:
+def check_exist(table, title, add):
+    id = db.execute("SELECT id FROM ? WHERE title = ? AND user_id = ?", table, title, session["user_id"])
+    if not id:
         if add:
-            return db.execute("INSERT INTO series(title, user_id) VALUES(?, ?)", title, session["user_id"])
+            return db.execute("INSERT INTO ?(title, user_id) VALUES(?, ?)", table, title, session["user_id"])
         else:
             return None
-    return series_id[0]["id"]
+    return id[0]["id"]
 
 
 def series_end(series_id):
@@ -60,7 +60,7 @@ def insert_book(dict):
         series_id = None
     else:
         # Add series if not exist
-        series_id = check_series(dict["series"], add=True)
+        series_id = check_exist("series", dict["series"], add=True)
 
         # Update series current
         volume = int(dict["volume"]) if dict["volume"] != "" else 0
@@ -100,7 +100,7 @@ def insert_series(dict):
 
 
 def insert_calendar(dict):
-    series_id = check_series(dict["series"], add=True)
+    series_id = check_exist("series", dict["series"], add=True)
 
     list_keys = [key for key in dict.keys() if key != "series" and dict[key] != ""]
     keys = ','.join(f'"{key}"' for key in list_keys)
@@ -138,3 +138,8 @@ def column_name(name):
     name = str(name).replace("_", " ").replace(".", " ").strip()
     name = " ".join(word.capitalize() for word in name.split())
     return name
+
+def custom_column(table):
+    custom = db.execute("SELECT name FROM user_custom WHERE table_name = ? AND user_id = ?", table, session["user_id"])
+    return [row["name"] for row in custom]
+

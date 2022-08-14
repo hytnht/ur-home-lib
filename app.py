@@ -52,8 +52,12 @@ def library():
     # If database was not blank
     if len(books) > 0:
         columns = [column_name(key) for key in books[0].keys() if "id" not in key]
-        return render_template("layout.html", title="Library", content="_table.html", table_head=columns, table_data=books,
-                               series=query_title("series"), books=query_title("book"), delete="book",
+        return render_template("layout.html", title="Library", content="_table.html",
+                               table_head=columns, table_data=books,
+                               series=query_title("series"), books=query_title("book"),
+                               custom=custom_column("book"), sr_custom=custom_column("series"),
+                               pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
+                               delete="book",
                                username=session["username"])
 
     return render_template("layout.html", title="Library", content="_blank.html", username=session["username"])
@@ -67,8 +71,12 @@ def series():
     # If database was not blank
     if len(series) > 0:
         columns = [key for key in series[0].keys() if "id" not in key]
-        return render_template("layout.html", title="Series", content="_table.html", table_head=columns, table_data=series,
-                               series=query_title("series"), books=query_title("book"), delete="series",
+        return render_template("layout.html", title="Series", content="_table.html",
+                               table_head=columns, table_data=series,
+                               series=query_title("series"), books=query_title("book"),
+                               custom=custom_column("book"), sr_custom=custom_column("series"),
+                               pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
+                               delete="series",
                                username=session["username"])
 
     return render_template("layout.html", title="Series", content="_blank.html", username=session["username"])
@@ -85,8 +93,12 @@ def accessory():
     # If database was not blank
     if len(accessories) > 0:
         columns = [key for key in accessories[0].keys() if "id" not in key]
-        return render_template("layout.html", title="Accessories", content="_table.html", table_head=columns, table_data=accessories,
-                               series=query_title("series"), books=query_title("book"), delete="accessory",
+        return render_template("layout.html", title="Accessories", content="_table.html",
+                               table_head=columns, table_data=accessories,
+                               series=query_title("series"), books=query_title("book"),
+                               custom=custom_column("book"), sr_custom=custom_column("series"),
+                               pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
+                               delete="accessory",
                                username=session["username"])
 
     return render_template("layout.html", title="Accessories", content="_blank.html", username=session["username"])
@@ -101,8 +113,12 @@ def log():
     # If database was not blank
     if len(log) > 0:
         columns = [key for key in log[0].keys() if "id" not in key]
-        return render_template("layout.html", title="Library", content="_table.html", table_head=columns, table_data=log,
-                               series=query_title("series"), books=query_title("book"), delete="log",
+        return render_template("layout.html", title="Library", content="_table.html",
+                               table_head=columns, table_data=log,
+                               series=query_title("series"), books=query_title("book"),
+                               custom=custom_column("book"), sr_custom=custom_column("series"),
+                               pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
+                               delete="log",
                                username=session["username"])
 
     return render_template("layout.html", title="Library", content="_blank.html", username=session["username"])
@@ -121,9 +137,13 @@ def calendar():
             columns = [key for key in calendar[0].keys() if "id" not in key]
             return render_template("calendar.html", content="_table.html", mode="table",
                                    table_head=columns, table_data=calendar,
-                                   series=query_title("series"), books=query_title("book"), delete="calendar",
+                                   custom=custom_column("book"), sr_custom=custom_column("series"),
+                                   pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
+                                   series=query_title("series"), books=query_title("book"),
+                                   delete="calendar",
                                    username=session["username"])
         return render_template("calendar.html", content="_blank.html", mode="table", username=session["username"])
+
 
 # </editor-fold>
 
@@ -154,7 +174,7 @@ def new_series():
         return '', 204
 
     # Ensure title was not duplicate:
-    if check_series(request.form.get("title"), add=False):
+    if check_exist("series", request.form.get("title"), add=False):
         flash("This series' title was existed.", "Error")
 
     insert_series(request.form.to_dict())
@@ -181,6 +201,34 @@ def new_calendar():
     return redirect("/calendar")
 
 
+@app.route("/new-log", methods=['POST'])
+def new_log():
+    # Ensure date title was submitted
+    if not request.form.get("date"):
+        flash("Please enter the date.", "Error")
+        return '', 204
+
+    # Ensure activity was submitted
+    if not request.form.get("activities"):
+        flash("Please enter the activity", "Error")
+        return '', 204
+
+    # Ensure book title was submitted
+    if not request.form.get("title"):
+        flash("Please enter the book title", "Error")
+        return '', 204
+
+    book_id = check_exist("book", request.form.get("title"), add="True")
+
+    list_keys = [key for key in request.form.keys() if "id" not in key and request.form.get(key) != ""]
+    keys = ','.join(f'"{key}"' for key in list_keys)
+    values = ','.join(f'"{request.form.get(key)}"' for key in list_keys)
+    db.execute(f"INSERT INTO log({keys}, book_id) VALUES({values}, ?)", book_id)
+
+    flash("Log updated.", "Success")
+    return redirect("/log")
+
+
 @app.route("/new-column", methods=['POST'])
 def new_column():
     table = request.form.get("table")
@@ -197,6 +245,7 @@ def new_column():
 
     name = "uc_" + secure_filename(request.form.get("name"))
     db.execute("ALTER TABLE ? ADD ? ?", table, name, type)
+    db.execute("INSERT INTO user_custom(name, table_name, user_id) VALUES(?,?,?)", name, table, session["user_id"])
 
     flash("New column added.", "Success")
     return redirect("/library")
@@ -300,6 +349,8 @@ def delete_calendar():
 
     flash("Release date deleted.", "Success")
     return redirect("/calendar")
+
+
 # </editor-fold>
 
 # <editor-fold desc="Login functions">
@@ -488,6 +539,8 @@ def reset_pass():
 
     else:
         return render_template("_reset_pass.html")
+
+
 # </editor-fold>
 
 # <editor-fold desc="Mass upload functions">
@@ -515,4 +568,7 @@ def mass_upload():
         flash("Wrong table.", "Error")
         return redirect("/library")
 
+
 # </editor-fold>
+
+app.jinja_env.globals.update(column_name=column_name)
