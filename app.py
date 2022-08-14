@@ -158,12 +158,12 @@ def new_book():
     # Ensure title was submitted
     if not request.form.get("title"):
         flash("Please enter the book's title.", "Error")
-        return '', 204
+        return redirect("/library")
 
     # Ensure volume was an integer
     if request.form.get("volume") != "" and not request.form.get("volume").isdigit():
         flash("Volume can only be an integer or blank.", "Error")
-        return '', 204
+        return redirect("/library")
 
     insert_book(request.form.to_dict())
 
@@ -177,7 +177,7 @@ def new_series():
     # Ensure title was submitted
     if not request.form.get("title"):
         flash("Please enter the series' title.", "Error")
-        return '', 204
+        return redirect("/series")
 
     # Ensure title was not duplicate:
     if check_exist("series", request.form.get("title"), add=False):
@@ -195,12 +195,12 @@ def new_calendar():
     # Ensure series title was submitted
     if not request.form.get("series"):
         flash("Please enter the series' title.", "Error")
-        return '', 204
+        return redirect("/calendar")
 
     # Ensure date was submitted
     if not request.form.get("date"):
         flash("Please enter the date", "Error")
-        return '', 204
+        return redirect("/calendar")
 
     insert_calendar(request.form.to_dict())
 
@@ -214,21 +214,22 @@ def new_log():
     # Ensure date title was submitted
     if not request.form.get("date"):
         flash("Please enter the date.", "Error")
-        return '', 204
+        return redirect("/log")
 
     # Ensure activity was submitted
     if not request.form.get("activities"):
         flash("Please enter the activity", "Error")
-        return '', 204
+        return redirect("/log")
 
     # Ensure book title was submitted
     if not request.form.get("title"):
         flash("Please enter the book title", "Error")
-        return '', 204
+        return redirect("/log")
 
     book_id = check_exist("book", request.form.get("title"), add="True")
 
-    list_keys = [key for key in request.form.keys() if "id" not in key and request.form.get(key) != ""]
+    list_keys = [key for key in request.form.keys() if
+                 "id" not in key and key != "title" and request.form.get(key) != ""]
     keys = ','.join(f'"{key}"' for key in list_keys)
     values = ','.join(f'"{request.form.get(key)}"' for key in list_keys)
     db.execute(f"INSERT INTO log({keys}, book_id) VALUES({values}, ?)", book_id)
@@ -639,7 +640,6 @@ def get_template():
 
     flash(f"Your templated is downloaded in {os.path.realpath(file.name)}", "Success")
     return redirect("/library")
-
 
 
 app.jinja_env.globals.update(column_name=column_name)
