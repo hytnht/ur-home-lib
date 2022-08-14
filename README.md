@@ -20,7 +20,7 @@ Create environment variables `env.py`:
 $ code env.py
 ```
 Assign your email and passwords to variables in file `.env `:
-``python
+```python
 import os
 def setVar():
     os.environ['MAIL_USERNAME'] = 'your_email'
