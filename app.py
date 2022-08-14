@@ -365,6 +365,21 @@ def delete_calendar():
     return redirect("/calendar")
 
 
+@app.route("/delete-log", methods=['POST'])
+@login_required
+def delete_log():
+    if not request.form.keys() or len(request.form.keys()) == 0:
+        flash("No item was selected.", "Error")
+        return redirect("/log")
+
+    ids = ','.join(f'"{key}"' for key in request.form.keys())
+
+    # Delete from release calendar table
+    db.execute(f"DELETE FROM log WHERE id IN ({ids})")
+
+    flash("Log deleted.", "Success")
+    return redirect("/log")
+
 # </editor-fold>
 
 # <editor-fold desc="Login functions">
