@@ -130,3 +130,11 @@ def upload_file(request):
     data = [{k: v for k, v in row.items()} for row in csv.DictReader(reader.splitlines(), skipinitialspace=True)]
 
     return data
+
+
+def column_name(name):
+    if name.startswith("ac_") or name.startswith("uc_"):
+        name = name[3:]
+    name = str(name).replace("_", " ").replace(".", " ").strip()
+    name = " ".join(word.capitalize() for word in name.split())
+    return name

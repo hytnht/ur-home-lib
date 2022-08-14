@@ -1,0 +1,39 @@
+<div class="modal fade" tabindex="-1" id="column-modal">
+    <div class="modal-dialog">
+        <div class="modal-content rounded-5 shadow">
+            <div class="modal-header p-5 pb-4 border-bottom-0">
+                <h2 class="fw-bold mb-0">User custom column</h2>
+                <button type="button" class="btn-close close-modal" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-5 pt-0">
+                <form action="/new-column" method="post">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control rounded-4" id="name" name="name"
+                               placeholder="name@example.com">
+                        <label for="name">Name</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select name="table" class="form-select form-control rounded-4">
+                            <option>To table</option>
+                            <option value="book">Library</option>
+                            <option value="series">Series</option>
+                            <option value="accessory">Accessories</option>
+                            <option value="release_calendar">Calendar</option>
+                            <option value="log">Log</option>
+                        </select>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select name="type" class="form-select form-control rounded-4">
+                            <option>Type</option>
+                            <option value="text">Text</option>
+                            <option value="number">Number</option>
+                            <option value="date">Date</option>
+                        </select>
+                    </div>
+                    <button class="w-100 mb-2 mt-4 btn btn-lg rounded-4 btn-primary" type="submit">Create column
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

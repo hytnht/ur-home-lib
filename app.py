@@ -6,6 +6,7 @@ from random import random
 from flask import Flask, redirect, render_template, request, session, flash, g, json, url_for
 from flask_mail import Mail, Message
 from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.utils import secure_filename
 from flask_session import Session
 from helpers import *
 
@@ -50,7 +51,7 @@ def library():
 
     # If database was not blank
     if len(books) > 0:
-        columns = [key for key in books[0].keys() if "id" not in key]
+        columns = [column_name(key) for key in books[0].keys() if "id" not in key]
         return render_template("layout.html", title="Library", content="_table.html", table_head=columns, table_data=books,
                                series=query_title("series"), books=query_title("book"), delete="book",
                                username=session["username"])
@@ -186,8 +187,19 @@ def new_column():
     if not table or table not in ["accessory", "book", "log", "release_calendar", "series"]:
         flash("Wrong table.", "Error")
         return redirect("/library")
-    else:
-        db.execute("ALTER TABLE ? ADD ")
+
+    type = request.form.get("type")
+    if not type or type not in ["text", "number", "date"]:
+        flash("Wrong type.", "Error")
+        return redirect("/library")
+    if type == "number":
+        type = "REAL"
+
+    name = "uc_" + secure_filename(request.form.get("name"))
+    db.execute("ALTER TABLE ? ADD ? ?", table, name, type)
+
+    flash("New column added.", "Success")
+    return redirect("/library")
 
 
 # </editor-fold>

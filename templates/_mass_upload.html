@@ -1,0 +1,39 @@
+<div class="modal fade" tabindex="-1" id="mass-modal">
+    <div class="modal-dialog">
+        <div class="modal-content rounded-5 shadow">
+            <div class="modal-header p-5 pb-4 border-bottom-0">
+                <h2 class="fw-bold mb-0">Mass upload</h2>
+                <button type="button" class="btn-close close-modal" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-5 pt-0">
+                <form action="/mass-upload" method="post" enctype="multipart/form-data">
+                    <input type="file" class="form-control rounded-4 py-3 mb-3" accept=".csv" name="file" id="file">
+                    <div class="form-floating mb-3">
+                        <select name="table" class="form-select form-control rounded-4">
+                            <option>To table</option>
+                            <option value="book">Library</option>
+                            <option value="series">Series</option>
+                            <option value="accessory">Accessories</option>
+                            <option value="release_calendar">Calendar</option>
+                            <option value="log">Log</option>
+                        </select>
+                    </div>
+                    <button class="w-100 mb-2 mt-4 btn btn-lg rounded-4 btn-primary" type="submit">Upload
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
