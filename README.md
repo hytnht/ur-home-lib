@@ -15,9 +15,9 @@ Create and activate virtualenv:
 python3 -m venv venv
 source .venv/bin/activate
 ```
-Create environment variables `.env`:
+Create environment variables `env.py`:
 ```shell script
-$touch .env
+$ touch .env
 ```
 Assign your email and passwords to variables in file `.env `:
 ```shell script
@@ -46,12 +46,12 @@ sass --watch style.scss style.css
 ## Create database
 Create table using **sqlite3**:
 ```shell script
+cd ..
 sqlite3 database.db < create.sql
 ```
 ## Run
 Run project using Flask in root folder:
 ```shell script
-cd ..
 flask run 
 ```
 
