@@ -1,6 +1,6 @@
-#Your Home Library
+# Your Home Library
 
-##Requirements
+## Requirements
 Make sure your computer have installed and activated **python3.10** or above, **pip**, **venv**, **nodejs**. 
 
 ## Clone
@@ -28,7 +28,7 @@ def setVar():
     os.environ['MAIL_DEFAULT_SENDER'] = 'your_email'
 
 ```
-##Install dependencies
+## Install dependencies
 Install python requirements in root folder:
 ```shell script
 python3 -m pip install -r requirements.tx
