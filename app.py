@@ -302,6 +302,9 @@ def delete_book():
                 else:
                     db.execute(f'INSERT INTO series_missing(series_id, volume) VALUES ("{series_id}", "{volume}")')
 
+                # Update series status
+                if volume == series_end(series_id):
+                    db.execute("UPDATE series SET status = 'Ongoing' WHERE id = ? AND status = 'End'", series_id)
                 # Delete missing volume bigger than new current volume
                 for missed in series_missing(series_id):
                     if next_current < missed < volume:
@@ -479,6 +482,7 @@ def edit_series():
         list_keys = [key for key in request.form.keys()]
         query = ','.join(
             f'"{key}" = NULLIF("{request.form[key] if request.form[key] else ""}","")' for key in list_keys)
+        print(f"UPDATE series SET {query} WHERE id = {request.form.get('id')}")
         db.execute(f"UPDATE series SET {query} WHERE id = ?", request.form.get("id"))
 
         flash("Series updated.", "Success")

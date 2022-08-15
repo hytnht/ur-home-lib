@@ -38,8 +38,6 @@ def series_current(series_id):
     series_current = db.execute("SELECT current FROM series WHERE id = ?", series_id)
     if not series_current or not series_current[0]["current"]:
         return 0
-    if series_current[0]["current"] == series_end(series_id):
-        db.execute("UPDATE series SET status = 'End' WHERE id = ?", series_id)
     return series_current[0]["current"]
 
 
@@ -77,8 +75,13 @@ def update_series(series_id, volume):
         return None
 
     # Update series current
-    if volume > series_current(series_id):
+    current = series_current(series_id)
+    if volume > current:
         db.execute("UPDATE series SET current = ? WHERE id = ?", volume, series_id)
+
+    # Update series status
+    if current == series_end(series_id):
+        db.execute("UPDATE series SET status = 'End' WHERE id = ?", series_id)
 
     # Delete missing volume now available
     missed = series_missing(series_id)
