@@ -127,7 +127,7 @@ def log():
     # If database was not blank
     if len(log) > 0:
         columns = [key for key in log[0].keys() if "id" not in key]
-        return render_template("layout.html", title="Library", content="_table.html",
+        return render_template("layout.html", title="Log", content="_table.html",
                                table_head=columns, table_data=log,
                                series=by_user("title", "series"), books=by_user("title", "book"),
                                categories=by_user("category", "book"),
@@ -136,7 +136,7 @@ def log():
                                delete="log",
                                username=session["username"])
 
-    return render_template("layout.html", title="Library", content="_blank.html", username=session["username"])
+    return render_template("layout.html", title="Log", content="_blank.html", username=session["username"])
 
 
 @app.route("/calendar")
@@ -292,23 +292,24 @@ def delete_book():
             volume = db.execute("SELECT volume FROM book WHERE id = ?", id)
             if volume and volume[0]["volume"]:
                 volume = int(volume[0]["volume"])
-
                 next_current = 0
+
                 # Update series current or add missing volume
                 if volume == series_current(series_id):
                     avail_vol = series_avail(series_id)
                     next_current = avail_vol[-2] if len(avail_vol) > 1 else 0
                     db.execute("UPDATE series SET current = ? WHERE id = ?", next_current, series_id)
+                    # Delete missing volume bigger than new current volume
+                    for missed in series_missing(series_id):
+                        if next_current < missed < volume:
+                            db.execute(
+                                f'DELETE FROM series_missing WHERE series_id = "{series_id}" AND volume = "{missed}"')
                 else:
                     db.execute(f'INSERT INTO series_missing(series_id, volume) VALUES ("{series_id}", "{volume}")')
 
                 # Update series status
                 if volume == series_end(series_id):
                     db.execute("UPDATE series SET status = 'Ongoing' WHERE id = ? AND status = 'End'", series_id)
-                # Delete missing volume bigger than new current volume
-                for missed in series_missing(series_id):
-                    if next_current < missed < volume:
-                        db.execute(f'DELETE FROM series_missing WHERE series_id = "{series_id}" AND volume = "{missed}"')
 
     ids = ','.join(f'"{key}"' for key in request.form.keys())
 

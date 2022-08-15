@@ -82,11 +82,11 @@ create table release_calendar
     id        INTEGER not null
         primary key
         unique,
-    publisher TEXT,
     series_id INTEGER
         references series,
-    volume    INTEGER,
-    date      NUMERIC not null
+    date      NUMERIC not null,
+    publisher TEXT,
+    volume    INTEGER
 );
 
 create table series_missing
