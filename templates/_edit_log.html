@@ -17,7 +17,7 @@
                         <div class="col-md-3">
                             <label for="lg_date" class="form-label">Date</label>
                             <input type="date" class="form-control today-date" id="lg_date"
-                                   value='{{data["date"]}}' name="date" required>
+                                   value='{{"" if not data["date"] else data["date"]}}' name="date" required>
                             <div class="invalid-feedback">
                                 Please enter the date.
                             </div>
@@ -26,7 +26,7 @@
                         <div class="col-sm-9">
                             <label for="lg_book" class="form-label">Book</label>
                             <input class="form-control" list="books-list"
-                                   value='{{data["title"]}}' name="title" id="lg_book">
+                                   value='{{"" if not data["title"] else data["title"]}}' name="title" id="lg_book">
                             <datalist id="books-list">
                                 <option></option>
                                 {% for title in books %}
@@ -38,13 +38,13 @@
                         <div class="col-sm-6">
                             <label for="lg_act" class="form-label">Activity</label>
                             <input type="text" class="form-control"
-                                   value='{{data["activities"]}}' id="lg_act" name="activities">
+                                   value='{{"" if not data["activities"] else data["activities"]}}' id="lg_act" name="activities">
                         </div>
 
                         <div class="col-sm-6">
                             <label for="lg_borrower" class="form-label">Borrower</label>
                             <input type="text" class="form-control"
-                                   value='{{data["borrower"]}}' id="lg_borrower" name="borrower">
+                                   value='{{"" if not data["borrower"] else data["borrower"]}}' id="lg_borrower" name="borrower">
                         </div>
                     </div>
 
@@ -61,7 +61,7 @@
                             <div class="col-sm-6">
                                 <label for="{{ lg_column }}" class="form-label">{{ lg_column }}</label>
                                 <input type="text" class="form-control" name="{{ lg_column }}"
-                                       value='{{data["lg_column"]}}' id="{{ lg_column }}">
+                                       value='{{"" if not data["lg_column"] else data["lg_column"]}}' id="{{ lg_column }}">
                             </div>
                         </div>
                         {% endfor %}

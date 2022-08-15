@@ -7,6 +7,7 @@ from flask import request, session, flash, redirect
 # Connect database
 db = SQL("sqlite:///database.db")
 
+
 # Check if a title (book or series) was existed in database, if not decide to add it or not
 def check_exist(table, title, add):
     if not table or not title:
@@ -19,6 +20,7 @@ def check_exist(table, title, add):
             return None
     return id[0]["id"]
 
+
 # Return series' end volume
 def series_end(series_id):
     if not series_id:
@@ -27,6 +29,7 @@ def series_end(series_id):
     if not series_end or not series_end[0]["end_vol"]:
         return 0
     return series_end[0]["end_vol"]
+
 
 # Return series' current volume
 def series_current(series_id):
@@ -39,14 +42,16 @@ def series_current(series_id):
         db.execute("UPDATE series SET status = 'End' WHERE id = ?", series_id)
     return series_current[0]["current"]
 
+
 # Return series' missed volumes
 def series_missing(series_id):
     if not series_id:
         return []
-    series_missing = db.execute("SELECT id, volume FROM series_missing WHERE series_id = ? ORDER BY volume", series_id)
+    series_missing = db.execute("SELECT volume FROM series_missing WHERE series_id = ? ORDER BY volume", series_id)
     if not series_missing:
         return []
-    return series_missing
+    return [row["volume"] for row in series_missing]
+
 
 # Return series' available volumes
 def series_avail(series_id):
@@ -55,10 +60,8 @@ def series_avail(series_id):
     series_avail = db.execute("SELECT volume FROM book WHERE series_id = ? ORDER BY volume", series_id)
     if not series_avail:
         return []
-    avail_vol = []
-    for row in series_avail:
-        avail_vol.append(row["volume"])
-    return avail_vol
+    return [row["volume"] for row in series_avail]
+
 
 # Query column in user database
 def by_user(column, table):
@@ -67,30 +70,42 @@ def by_user(column, table):
     query = db.execute(f"SELECT DISTINCT {column} FROM {table} WHERE user_id = {session['user_id']}")
     return [dict[column] for dict in query]
 
+
+# Update series based on insert/update book
+def update_series(series_id, volume):
+    if not series_id or not volume:
+        return None
+
+    # Update series current
+    if volume > series_current(series_id):
+        db.execute("UPDATE series SET current = ? WHERE id = ?", volume, series_id)
+
+    # Delete missing volume now available
+    missed = series_missing(series_id)
+    if volume in missed:
+        db.execute("DELETE FROM series_missing WHERE series_id = ? AND  volume = ?", series_id, volume)
+
+    # Update new missing volumes
+    avail = series_avail(series_id)
+    print(avail)
+    print(missed)
+    for i in range(1, volume):
+        if i not in avail and i not in missed:
+            db.execute("INSERT INTO series_missing(series_id, volume) VALUES(?, ?)", series_id, i)
+
+
 # Insert new book to table
 def insert_book(dict):
     if not dict:
         return None
-    if "series" not in dict.keys():
+    if not dict["series"] or "series" not in dict.keys():
         series_id = None
     else:
         # Add series if not exist
         series_id = check_exist("series", dict["series"], add=True)
-
         # Update series current
-        volume = int(dict["volume"]) if dict["volume"] != "" else 0
-        if volume > series_current(series_id):
-            db.execute("UPDATE series SET current = ? WHERE id = ?", volume, series_id)
-
-        # Delete missing volume
-        for row in series_missing(series_id):
-            if volume == row["volume"]:
-                db.execute("DELETE FROM series_missing WHERE id = ?", row["id"])
-
-        # Update missing volumes
-        for i in range(1, volume):
-            if i not in series_avail(series_id):
-                db.execute("INSERT INTO series_missing(series_id, volume) VALUES(?, ?)", series_id, i)
+        if dict["volume"] != "":
+            update_series(series_id, int(dict["volume"]))
 
     # Add new book to database
     list_keys = [key for key in dict.keys() if key[0:3] != "ac_" and key != "series" and dict[key] != ""]
@@ -108,6 +123,7 @@ def insert_book(dict):
 
     return book_id
 
+
 # Insert new series to table
 def insert_series(dict):
     list_keys = [key for key in dict.keys() if dict[key] != ""]
@@ -115,6 +131,7 @@ def insert_series(dict):
     values = ','.join(f'"{dict[key]}"' for key in list_keys)
     series_id = db.execute(f"INSERT INTO series({keys}, user_id) VALUES({values}, ?)", session["user_id"])
     return series_id
+
 
 # Insert new release date to table
 def insert_calendar(dict):
@@ -127,6 +144,7 @@ def insert_calendar(dict):
     values = ','.join(f'"{dict[key]}"' for key in list_keys)
     calendar_id = db.execute(f"INSERT INTO release_calendar({keys}, series_id) VALUES({values}, ?)", series_id)
     return calendar_id
+
 
 # Check and read file uploaded
 def upload_file(request):
@@ -154,6 +172,7 @@ def upload_file(request):
 
     return data
 
+
 # Convert column name in database to display in frontend
 def column_name(name):
     if not name:
@@ -164,12 +183,14 @@ def column_name(name):
     name = " ".join(word.capitalize() for word in name.split())
     return name
 
+
 # Return list of user custom columns
 def custom_column(table):
     if not table:
         return []
     custom = db.execute("SELECT name FROM user_custom WHERE table_name = ? AND user_id = ?", table, session["user_id"])
     return [row["name"] for row in custom]
+
 
 # Check if user logged in
 def login_required(f):

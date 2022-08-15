@@ -3,7 +3,7 @@ import os
 
 from datetime import datetime
 from random import random
-from flask import Flask, render_template, g, json, url_for
+from flask import Flask, render_template, json
 from flask_mail import Mail, Message
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
@@ -41,7 +41,7 @@ def after_request(response):
 # <editor-fold desc="Display functions">
 @app.route("/")
 def index():
-    if not session["user_id"]:
+    if session.get("user_id") is None:
         return render_template("index.html")
     else:
         return redirect("/library")
@@ -74,10 +74,10 @@ def library():
 @login_required
 def series():
     # Query database
-    series = db.execute("SELECT series.*, sm.volume as missing_vol FROM series"
-                        " LEFT JOIN series_missing sm ON series.id = sm.series_id"
-                        " WHERE user_id = ?", session["user_id"])
-
+    series = db.execute("SELECT series.* FROM series WHERE user_id = ?", session["user_id"])
+    for row in series:
+        missed = series_missing(row["id"])
+        row["missing_vol"] = ' ,'.join(str(vol) for vol in missed)
     # If database was not blank
     if len(series) > 0:
         columns = [key for key in series[0].keys() if "id" not in key]
@@ -287,30 +287,31 @@ def delete_book():
         # Retrieve book information
         series_id = db.execute("SELECT series_id FROM book WHERE id = ?", id)
         if not series_id:
-            pass
+            continue
         else:
             series_id = series_id[0]["series_id"]
 
         volume = db.execute("SELECT volume FROM book WHERE id = ?", id)
-        if not volume:
-            pass
-        else:
-            volume = volume[0]["volume"]
+        if volume and volume[0]["volume"]:
+            volume = int(volume[0]["volume"])
+            print("Vol ", volume)
 
-        next_current = 0
+            next_current = 0
+            # Update series current
+            if volume == series_current(series_id):
+                avail_vol = series_avail(series_id)
+                next_current = avail_vol[-2] if len(avail_vol) > 2 else 0
+                db.execute("UPDATE series SET current = ? WHERE id = ?", next_current, series_id)
 
-        # Update series current
-        if volume == series_current(series_id):
-            avail_vol = series_avail(series_id)
-            if len(avail_vol) > 2:
-                next_current = avail_vol[-2]
-            db.execute("UPDATE series SET current = ? WHERE id = ?", next_current, series_id)
+            # Delete missing volume bigger than new current volume
+            for missed in series_missing(series_id):
+                if next_current < missed < volume:
+                    print("next_current < missed < volume: ", missed)
+                    print("Sid ", series_id)
+                    db.execute(f'DELETE FROM series_missing WHERE series_id = "{series_id}" AND volume = "{volume}"')
 
-        # Delete missing volume
-        for row in series_missing(series_id):
-            if next_current < row["volume"] < int(volume):
-                db.execute("DELETE FROM series_missing WHERE id = ?", row["id"])
-
+            # Add missing volume
+            db.execute(f'INSERT INTO series_missing(series_id, volume) VALUES ("{series_id}", "{volume}")')
     ids = ','.join(f'"{key}"' for key in request.form.keys())
 
     # Delete from accessory table
@@ -340,6 +341,9 @@ def delete_series():
 
     # Delete release date
     db.execute(f"DELETE FROM release_calendar WHERE series_id IN ({ids})")
+
+    # Delete series missing table
+    db.execute(f"DELETE FROM series_missing WHERE series_id IN ({ids})")
 
     # Delete from series table
     db.execute(f"DELETE FROM series WHERE id IN ({ids})")
@@ -436,27 +440,32 @@ def edit_book():
             return redirect("/library")
 
         # Updata book table
-        series_id = db.execute("SELECT series_id FROM book WHERE id = ?", request.form.get("id"))[0]["series_id"]
+        series_id = check_exist("series", request.form.get("series"), add=True)
         list_keys = [key for key in request.form.keys() if key[0:3] != "ac_" and key not in ["series", "id"]]
-        query = ','.join(f'"{key}" = NULLIF("{request.form[key]}","")' for key in list_keys)
+        query = ','.join(
+            f'"{key}" = NULLIF("{request.form[key] if request.form[key] else ""}","")' for key in list_keys)
         db.execute(f"UPDATE book SET {query}, series_id = ? WHERE id = ?", series_id, request.form.get("id"))
+
+        # Update series and missing table
+        if request.form.get("volume"):
+            update_series(series_id, int(request.form.get("volume")))
 
         # Updata accessory table
         list_keys = [key for key in request.form.keys() if key[0:3] == "ac_"]
-        query_ac = ','.join(f'"{key[3:]}" = NULLIF("{request.form[key]}","")' for key in list_keys)
+        query_ac = ','.join(
+            f'"{key[3:]}" = NULLIF("{request.form[key] if request.form[key] else ""}","")' for key in list_keys)
         db.execute(f"UPDATE accessory SET {query_ac} WHERE book_id = ?", request.form.get("id"))
-        print(query)
-        print(request.form.get("id"))
         flash("Book updated.", "Success")
         return redirect("/library")
     else:
-        print("Inside books: ", request.args.get("id"))
-        book = db.execute("SELECT book.*, type, qty, material, ac.status FROM book "
-                          "JOIN accessory ac ON book.id = ac.book_id "
+        book = db.execute("SELECT book.*, series.title AS sr_title, type, qty, material, ac.status FROM "
+                          "(book LEFT JOIN accessory ac ON book.id = ac.book_id) "
+                          "LEFT JOIN series on book.series_id = series.id "
                           "WHERE book.id = ?", request.args.get("id"))
+        print(book)
         if book is None or len(book) == 0:
             return redirect("/library")
-        print("book[0]: ", book[0])
+
         return render_template("layout.html", title="Library", content="_edit_book.html", data=book[0],
                                series=by_user("title", "series"), categories=by_user("category", "book"),
                                custom=custom_column("book"), username=session["username"])
@@ -473,7 +482,8 @@ def edit_series():
 
         # Updata series table
         list_keys = [key for key in request.form.keys()]
-        query = ','.join(f'"{key}" = NULLIF("{request.form[key]}","")' for key in list_keys)
+        query = ','.join(
+            f'"{key}" = NULLIF("{request.form[key] if request.form[key] else ""}","")' for key in list_keys)
         db.execute(f"UPDATE series SET {query} WHERE id = ?", request.form.get("id"))
 
         flash("Series updated.", "Success")
@@ -508,7 +518,8 @@ def edit_log():
         book_id = check_exist("book", request.form.get("title"), add="True")
 
         list_keys = [key for key in request.form.keys() if "id" not in key and key != "title"]
-        query = ','.join(f'"{key}" = NULLIF("{request.form[key]}","")' for key in list_keys)
+        query = ','.join(
+            f'"{key}" = NULLIF(NULLIF("{request.form[key] if request.form[key] else ""}","")' for key in list_keys)
         db.execute(f"UPDATE log SET {query}, book_id = ?, WHERE id = ?", book_id, request.form.get("id"))
 
         flash("Log updated.", "Success")
@@ -520,6 +531,7 @@ def edit_log():
         return render_template("layout.html", title="Log", content="_edit_log.html", data=log[0],
                                books=by_user("title", "book"), lg_custom=custom_column("log"),
                                username=session["username"])
+
 
 @app.route("/calendar/edit", methods=['GET', "POST"])
 @login_required
@@ -537,7 +549,8 @@ def edit_calendar():
 
         series_id = check_exist("series", request.form.get("series"), add=True)
         list_keys = [key for key in request.form.keys() if key != "series" and "id" not in key]
-        query = ','.join(f'"{key}" = NULLIF("{request.form[key]}","")' for key in list_keys)
+        query = ','.join(
+            f'"{key}" = NULLIF("{request.form[key] if request.form[key] else ""}","")' for key in list_keys)
         db.execute(f"UPDATE calendar SET {query}, series_id = ?, WHERE id = ?", series_id, request.form.get("id"))
 
         flash("Calendar updated.", "Success")
@@ -550,6 +563,7 @@ def edit_calendar():
                                series=by_user("title", "series"), pb_custom=custom_column("calendar"),
                                username=session["username"])
 
+
 @app.route("/accessory/edit")
 @login_required
 def edit_accessory():
@@ -557,12 +571,12 @@ def edit_accessory():
     if accessory is None or len(accessory) == 0:
         return redirect("/accessory")
 
-    book_id = db.execute("SELECT book_id FROM accessory WHERE id = ?",  request.args.get("id"))[0]["book_id"]
+    book_id = db.execute("SELECT book_id FROM accessory WHERE id = ?", request.args.get("id"))[0]["book_id"]
     if book_id is None:
         flash("Invalid book.", "Error")
         return redirect("/accessory")
 
-    return redirect("/library/edit?id=" +str(book_id))
+    return redirect("/library/edit?id=" + str(book_id))
 
 
 # </editor-fold>
@@ -681,14 +695,14 @@ def forgot():
             return redirect("/")
 
         # Set reset code and email globally
-        g.reset_code_created = str(random() * 1000000)[-6:]
-        g.reset_email = email
+        session["reset_code"] = str(random() * 1000000)[-6:]
+        session["email"] = email
 
         # Send email
         message = Message(
             "You are resetting password for your account at Your Home Library! Please enter the following code: "
-            + str(g.reset_code_created),
-            recipients=[g.reset_email])
+            + str(session["reset_code"]),
+            recipients=[session["email"]])
         mail.send(message)
 
         return '', 204
@@ -702,9 +716,8 @@ def reset_code():
     if request.method == "POST":
         # Get input
         code = request.form.get("code")
-
         # Ensure reset code was submitted correctly
-        if not code or code != g.reset_code_created:
+        if not code or code != session["reset_code"]:
             flash("Wrong code.", "Error")
             return redirect("/")
 
@@ -737,18 +750,18 @@ def reset_pass():
             return redirect("/")
 
         # Change database
-        db.execute("UPDATE user SET password = ? WHERE email = ?", generate_password_hash(password), g.reset_email)
+        db.execute("UPDATE user SET password = ? WHERE email = ?", generate_password_hash(password), session["email"])
 
         # Send email
         message = Message(
             "Your password at Your Home Library has been changed! If it is not yours, reset your password by going to Log In and choosing Forgot Password",
-            recipients=[g.reset_email])
+            recipients=[session["email"]])
         mail.send(message)
 
         # Release global variables
-        g.reset_code_created = None
-        g.reset_email = None
+        session.clear()
 
+        flash("Password changed.", "Success")
         return redirect("/")
 
     else:

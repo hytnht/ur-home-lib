@@ -17,7 +17,7 @@
                         <div class="col-md-3">
                             <label for="pb_date" class="form-label">Date</label>
                             <input type="date" class="form-control" id="pb_date"
-                                   value='{{data["date"]}}' name="date"
+                                   value='{{"" if not data["date"] else data["date"]}}' name="date"
                                    required>
                             <div class="invalid-feedback">
                                 Please enter the release date.
@@ -27,7 +27,7 @@
                         <div class="col-sm-8">
                             <label for="pb_series" class="form-label">Series</label>
                             <input class="form-control" list="series-list"
-                                   value='{{data["series"]}}' name="series" id="pb_series">
+                                   value='{{"" if not data["series"] else data["series"]}}' name="series" id="pb_series">
                             <datalist id="series-list">
                                 <option></option>
                                 {% for sr_title in series %}
@@ -39,7 +39,7 @@
                         <div class="col-sm-1">
                             <label for="pb_vol" class="form-label">Volume</label>
                             <input type="number" class="form-control" id="pb_vol"
-                                   value='{{data["volume"]}}' name="volume" placeholder="7">
+                                   value='{{"" if not data["volume"] else data["volume"]}}' name="volume" placeholder="7">
                         </div>
                     </div>
 
@@ -55,7 +55,7 @@
                             <div class="col-sm-6">
                                 <label for="{{ pb_column }}" class="form-label">{{ pb_column }}</label>
                                 <input type="text" class="form-control" name="{{ pb_column }}"
-                                       value='{{data["pb_column"]}}' id="{{ pb_column }}">
+                                       value='{{"" if not data["pb_column"] else data["pb_column"]}}' id="{{ pb_column }}">
                             </div>
                         </div>
                         {% endfor %}

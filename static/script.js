@@ -63,6 +63,7 @@ function toggle(boxName, mode) {
 // Edit data modal
 function edit(id) {
     current =  window.location.href.split('?')[0].split('#')[0]
+    console.log(id)
     return window.location.replace(current + "/edit?id=" + id)
 }
 

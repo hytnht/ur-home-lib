@@ -16,7 +16,7 @@
                         <div class="col-md-7">
                             <label for="sr_name" class="form-label">Name</label>
                             <input type="text" class="form-control" id="sr_name" name="title"
-                                   value='{{data["title"]}}'
+                                   value='{{"" if not data["title"] else data["title"]}}'
                                    required>
                             <div class="invalid-feedback">
                                 Please enter the series' title.
@@ -25,7 +25,7 @@
 
                         <div class="col-md-3">
                             <label for="sr_status" class="form-label">Status</label>
-                            <select class="form-select" id="sr_status" name="status" value='{{data["status"]}}'>
+                            <select class="form-select" id="sr_status" name="status" value='{{"" if not data["status"] else data["status"]}}'>
                                 <option></option>
                                 <option value="End">End</option>
                                 <option value="Hiatus">Hiatus</option>
@@ -37,7 +37,7 @@
                         <div class="col-sm-2">
                             <label for="sr_end" class="form-label">End Volume</label>
                             <input type="number" class="form-control" id="sr_end" name="end_vol"
-                                   value='{{data["end_vol"]}}'>
+                                   value='{{"" if not data["end_vol"] else data["end_vol"]}}'>
                         </div>
                     </div>
 
@@ -53,7 +53,7 @@
                             <div class="col-sm-6">
                                 <label for="{{ sr_column }}" class="form-label">{{ sr_column }}</label>
                                 <input type="text" class="form-control" id="{{ sr_column }}" name="{{ sr_column }}"
-                                       value='{{data["sr_column"]}}'>
+                                       value='{{"" if not data["sr_column"] else data["sr_column"]}}'>
                             </div>
                         </div>
                         {% endfor %}
