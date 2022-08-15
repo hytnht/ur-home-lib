@@ -45,6 +45,10 @@ function check_all(box, toggleMode) {
             toggle(col[i].getAttribute("name"), toggleMode)
         }
     }
+    if (box.checked == false)
+        document.getElementById("table-display").style.display = 'none'
+    else
+        document.getElementById("table-display").style.display = 'table'
 }
 
 // Checkbox toggle column which name = checkbox's name omitted the starting 'b' (button)

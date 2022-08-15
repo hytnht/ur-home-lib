@@ -2,6 +2,28 @@
 
 {% set title = "Calendar" %}
 
+{% block button %}
+    <!--Display button-->
+    <button id="display-button" onclick="display_mode()" type="button"
+            class="btn btn-sm btn-outline-secondary me-2 px-3" id="display-button">
+        <i class="fa-solid fa-table"></i>
+    </button>
+
+    <!--Delete button-->
+    <button id="delete-button" form="delete-item"
+            onclick="return confirm('Do you really want to delete?')"
+            type="submit"
+            class="btn btn-sm btn-outline-secondary me-2 px-3">
+        <i class="fa-solid fa-minus"></i>
+    </button>
+
+    <!--Insert items button-->
+    <button type="button" class="btn btn-sm btn-outline-secondary me-2 px-3" data-bs-toggle="modal"
+            data-bs-target="#insert-modal">
+        <i class="fa-solid fa-plus"></i>
+    </button>
+{% endblock button %}
+
 {% block content %}
 <div id="display-content" mode={{ mode }}>
     {{ super() }}

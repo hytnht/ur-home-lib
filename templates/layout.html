@@ -114,14 +114,33 @@
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">{{ title }}</h1>
                 <div class="btn-toolbar mb-2 mb-md-0" id="sub-btn">
+                    {% block button %}
                     <!--Show columns drowpdown-->
-                    <button id="display-button" onclick="display_mode()" type="button"
-                            class="btn btn-sm btn-outline-secondary me-2 px-3" id="display-button">
-                        <i class="fa-solid fa-table"></i>
-                    </button>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary me-2 px-3 dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-eye me-2"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <div class="form-check dropdown-item px-lg-5">
+                                <input class="form-check-input" type="checkbox" onclick="check_all(this,'table-cell')"
+                                       name="col" checked>
+                                <label class="form-check-label fw-bold text-primary">Select All</label>
+                            </div>
+                            <hr class="m-0">
+                            {% for head in table_head %}
+                            <div class="form-check dropdown-item px-lg-5">
+                                <input name={{'bt-'~head}} class="form-check-input c-col" type="checkbox"
+                                       onchange="toggle(this.name,'table-cell')"
+                                       checked>
+                                <label class="form-check-label">{{ head }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
 
                     <!--Delete button-->
-                    <button id="delete-button" form="delete-item"
+                    <button form="delete-item"
                             onclick="return confirm('Do you really want to delete?')"
                             type="submit"
                             class="btn btn-sm btn-outline-secondary me-2 px-3">
@@ -133,6 +152,7 @@
                             data-bs-target="#insert-modal">
                         <i class="fa-solid fa-plus"></i>
                     </button>
+                    {% endblock button %}
                 </div>
             </div>
 
