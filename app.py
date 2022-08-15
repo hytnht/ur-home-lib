@@ -1,3 +1,5 @@
+import dbm
+
 import env
 import os
 
@@ -56,6 +58,7 @@ def library():
                        "WHERE book.user_id = ?", session["user_id"])
 
     # If database was not blank
+    print(custom_column("book"))
     if len(books) > 0:
         columns = [key for key in books[0].keys() if "_id" not in key]
         return render_template("layout.html", title="Library", content="_table.html",
@@ -64,10 +67,15 @@ def library():
                                categories=by_user("category", "book"),
                                custom=custom_column("book"), sr_custom=custom_column("series"),
                                pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
-                               delete="book",
                                username=session["username"])
 
-    return render_template("layout.html", title="Library", content="_blank.html", username=session["username"])
+    return render_template("layout.html", title="Library", content="_blank.html",
+                           series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
+                           categories=by_user("category", "book"),
+                           custom=custom_column("book"), sr_custom=custom_column("series"),
+                           pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
+                           delete="book",
+                           username=session["username"])
 
 
 @app.route("/series")
@@ -90,7 +98,12 @@ def series():
                                delete="series",
                                username=session["username"])
 
-    return render_template("layout.html", title="Series", content="_blank.html", username=session["username"])
+    return render_template("layout.html", title="Series", content="_blank.html",
+                           series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
+                           categories=by_user("category", "book"),
+                           custom=custom_column("book"), sr_custom=custom_column("series"),
+                           pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
+                           username=session["username"])
 
 
 @app.route("/accessory")
@@ -111,10 +124,14 @@ def accessory():
                                categories=by_user("category", "book"),
                                custom=custom_column("book"), sr_custom=custom_column("series"),
                                pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
-                               delete="accessory",
                                username=session["username"])
 
-    return render_template("layout.html", title="Accessories", content="_blank.html", username=session["username"])
+    return render_template("layout.html", title="Accessories", content="_blank.html",
+                           series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
+                           categories=by_user("category", "book"),
+                           custom=custom_column("book"), sr_custom=custom_column("series"),
+                           pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
+                           username=session["username"])
 
 
 @app.route("/log")
@@ -127,7 +144,6 @@ def log():
     # If database was not blank
     if len(log) > 0:
         columns = [key for key in log[0].keys() if "id" not in key]
-        print(dict_by_user("id, title", "book"))
         return render_template("layout.html", title="Log", content="_table.html",
                                table_head=columns, table_data=log,
                                series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
@@ -142,7 +158,6 @@ def log():
                            categories=by_user("category", "book"),
                            custom=custom_column("book"), sr_custom=custom_column("series"),
                            pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
-                           delete="log",
                            username=session["username"])
 
 
@@ -165,7 +180,12 @@ def calendar():
                                    series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
                                    delete="calendar",
                                    username=session["username"])
-        return render_template("calendar.html", content="_blank.html", mode="table", username=session["username"])
+        return render_template("calendar.html", content="_blank.html", mode="table",
+                               custom=custom_column("book"), sr_custom=custom_column("series"),
+                               categories=by_user("category", "book"),
+                               pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
+                               series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
+                               username=session["username"])
 
 
 # </editor-fold>
@@ -264,6 +284,7 @@ def new_log():
 @app.route("/new-column", methods=['POST'])
 @login_required
 def new_column():
+    # Check input and convert
     table = request.form.get("table")
     if not table or table not in ["accessory", "book", "log", "release_calendar", "series"]:
         flash("Wrong table.", "Error")
@@ -276,7 +297,13 @@ def new_column():
     if type == "number":
         type = "REAL"
 
+    # Ensure no duplicate column
     name = "uc_" + secure_filename(request.form.get("name")).replace(".", "_").strip().lower()
+    col = db.execute("SELECT * FROM user_custom WHERE name = ? and table_name = ?", name, table)
+    if len(col) > 0 and col[0]["id"] is not None:
+        flash(" Column already existed.", "Error")
+        return redirect("/library")
+
     db.execute("ALTER TABLE ? ADD ? ?", table, name, type)
     db.execute("INSERT INTO user_custom(name, table_name, user_id) VALUES(?,?,?)", name, table, session["user_id"])
 
@@ -472,7 +499,6 @@ def edit_book():
                           "(book LEFT JOIN accessory ac ON book.id = ac.book_id) "
                           "LEFT JOIN series on book.series_id = series.id "
                           "WHERE book.id = ?", request.args.get("id"))
-        print(book)
         if book is None or len(book) == 0:
             return redirect("/library")
 
@@ -494,7 +520,6 @@ def edit_series():
         list_keys = [key for key in request.form.keys()]
         query = ','.join(
             f'"{key}" = NULLIF("{request.form[key] if request.form[key] else ""}","")' for key in list_keys)
-        print(f"UPDATE series SET {query} WHERE id = {request.form.get('id')}")
         db.execute(f"UPDATE series SET {query} WHERE id = ?", request.form.get("id"))
 
         flash("Series updated.", "Success")
@@ -535,7 +560,6 @@ def edit_log():
         list_keys = [key for key in request.form.keys() if "id" not in key and key != "book"]
         query = ','.join(
             f'"{key}" = NULLIF("{request.form[key] if request.form[key] else ""}","")' for key in list_keys)
-        print(f"UPDATE log SET {query}, book_id = ? WHERE id = ?")
         db.execute(f"UPDATE log SET {query}, book_id = ? WHERE id = ?", book_id, request.form.get("id"))
 
         flash("Log updated.", "Success")

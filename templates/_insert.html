@@ -193,10 +193,10 @@
                         </h6>
                         <div class="row g-3 mt-0 accordion-collapse collapse show" id="user_custom">
                             {% for column in custom %}
-                            <div class="col-lg-6 mt-3 mb-4">
-                                <label for="{{ column }}" class="form-label">{{ column_name(column) }}</label>
-                                <input type="text" class="form-control" id="{{ column }}" name="{{ column }}">
-                            </div>
+                                <div class="col-lg-6 mt-3 mb-4">
+                                    <label for="{{ column }}" class="form-label">{{ column_name(column) }}</label>
+                                    <input type="text" class="form-control" id="{{ column }}" name="{{ column }}">
+                                </div>
                             {% endfor %}
                         </div>
 
