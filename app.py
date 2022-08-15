@@ -830,7 +830,7 @@ def mass_upload():
                 insert_series(dict)
             flash("Series uploaded.", "Success")
             return redirect("/series")
-        elif table == "calendar":
+        elif table == "release_calendar":
             for dict in data:
                 insert_calendar(dict)
             flash("Calendar uploaded.", "Success")

@@ -174,18 +174,17 @@ const INITIAL_MONTH = dayjs().format("M");
 let showMonth = dayjs(new Date(INITIAL_YEAR, INITIAL_MONTH - 1, 1));
 let currentList, preList, nextList;
 
-function display_calendar() {
+function display_calendar(data) {
     WEEKDAYS.forEach((weekday) => {
         let headCell = document.createElement("li");
         headCell.innerText = weekday;
         document.getElementById("calendar-header").appendChild(headCell);
     });
-
-    calendar();
-    switch_month();
+    calendar(INITIAL_YEAR, INITIAL_MONTH, data);
+    switch_month(data);
 }
 
-function calendar(year = INITIAL_YEAR, month = INITIAL_MONTH) {
+function calendar(year = INITIAL_YEAR, month = INITIAL_MONTH, data) {
     let body = document.getElementById("calendar-body");
     document.getElementById("current-month").innerText = dayjs(new Date(year, month - 1)).format("MMMM YYYY");
 
@@ -200,6 +199,8 @@ function calendar(year = INITIAL_YEAR, month = INITIAL_MONTH) {
     [...preList, ...currentList, ...nextList].forEach((day) => {
         append_cell(day, body);
     });
+
+    calendar_data(data)
 }
 
 function append_cell(day, body) {
@@ -226,12 +227,14 @@ function calendar_data(data) {
     let objects = JSON.parse(data);
     for (let obj of objects) {
         let element = document.getElementById(obj.date);
-        let series = document.createElement("div");
-        series.setAttribute("data-bs-toggle", "tooltip");
-        series.setAttribute("data-bs-placement", "right");
-        series.setAttribute("title", obj.title);
-        series.innerText = obj.title;
-        element.appendChild(series);
+        if (element) {
+            let series = document.createElement("div");
+            series.setAttribute("data-bs-toggle", "tooltip");
+            series.setAttribute("data-bs-placement", "right");
+            series.setAttribute("title", obj.title);
+            series.innerText = obj.title;
+            element.appendChild(series);
+        }
     }
 }
 
@@ -278,20 +281,20 @@ function next_list(year, month) {
     });
 }
 
-function switch_month() {
+function switch_month(data) {
     document.getElementById("pre-month").addEventListener("click", function () {
         showMonth = dayjs(showMonth).subtract(1, "month");
-        calendar(showMonth.format("YYYY"), showMonth.format("M"));
+        calendar(showMonth.format("YYYY"), showMonth.format("M"), data);
     });
 
     document.getElementById("this-month").addEventListener("click", function () {
         showMonth = dayjs(new Date(INITIAL_YEAR, INITIAL_MONTH - 1, 1));
-        calendar(showMonth.format("YYYY"), showMonth.format("M"));
+        calendar(showMonth.format("YYYY"), showMonth.format("M"), data);
     });
 
     document.getElementById("next-month").addEventListener("click", function () {
         showMonth = dayjs(showMonth).add(1, "month");
-        calendar(showMonth.format("YYYY"), showMonth.format("M"));
+        calendar(showMonth.format("YYYY"), showMonth.format("M"), data);
     });
 }
 

@@ -10,7 +10,6 @@
     <ol id="calendar-header" class="fw-bold py-3 mt-3 mb-0 bg-primary text-light"></ol>
     <ol id="calendar-body"></ol>
     <script type="text/javascript">
-        display_calendar()
-        calendar_data({{ data|tojson }})
+        display_calendar({{data|tojson}})
     </script>
 </div>
