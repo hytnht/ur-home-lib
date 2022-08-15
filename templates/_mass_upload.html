@@ -7,8 +7,9 @@
             </div>
             <div class="modal-body p-5 pt-0">
                 <form action="/mass-upload" method="post" enctype="multipart/form-data">
-                    <input type="file" class="form-control rounded-4 py-3 mb-3" accept=".csv" name="file" id="file">
-                    <div class="form-floating mb-3">
+                    <input type="file" class="form-control rounded-4 py-3 mb-1" accept=".csv" name="file" id="file">
+                    <span class="text-black-50">Template with instruction goes <a href="/download-template">here</a></span>
+                    <div class="form-floating mt-3 mb-3">
                         <select name="table" class="form-select form-control rounded-4">
                             <option>To table</option>
                             <option value="book">Library</option>
@@ -16,7 +17,7 @@
                             <option value="release_calendar">Calendar</option>
                         </select>
                     </div>
-                    <button class="w-100 mb-2 mt-4 btn btn-lg rounded-4 btn-primary" type="submit">Upload
+                    <button class="w-100 mb-2 mt-3 btn btn-lg rounded-4 btn-primary" type="submit">Upload
                     </button>
                 </form>
             </div>

@@ -888,11 +888,14 @@ def get_template():
         os.makedirs("./static/export")
     with open("./static/export/template.csv", "w") as file:
         writer = csv.writer(file, delimiter=';')
+        file.write("Instruction: Choose only 1 columns set below for corresponding table. "
+                   "Paste it to the very first line of upload file as the header. "
+                   "Then enter data into next lines. Save as CSV and upload.\n\n")
         file.write("Columns for book table: \n")
         writer.writerow(book)
         file.write("Columns for series table: \n")
         writer.writerow(series)
-        file.write("Columns for calendar table (date format YYYY-MM-DD: \n")
+        file.write("Columns for calendar table (date format YYYY-MM-DD): \n")
         writer.writerow(calendar)
 
     flash(f"Your templated is downloaded in {os.path.realpath(file.name)}", "Success")
@@ -902,4 +905,5 @@ def get_template():
 # </editor-fold>
 
 
+# Function to use in jinja template
 app.jinja_env.globals.update(column_name=column_name)
