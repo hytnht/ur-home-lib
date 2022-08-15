@@ -19,40 +19,39 @@
 <!-- Header -->
 <header>
     <!-- Navigation bar -->
-    <nav id="nav" class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">
-                <img alt="Logo" height="70rem" src="../static/img/full-logo.png">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav nav-pills me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#services">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#about">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#contact">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <button type="button" class="nav-link btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#modal">
-                            Login
-                        </button>
-                    </li>
-                </ul>
-            </div>
+    <nav id="nav"
+         class="container-fluid d-flex justify-content-between px-4 navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <a class="navbar-brand" href="/">
+            <img alt="Logo" src="../static/img/full-logo.png">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#nav-links" aria-controls="nav-links"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="nav-links">
+            <ul class="navbar-nav nav-pills me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="#services">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#contact">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#modal">
+                        Login
+                    </button>
+                </li>
+            </ul>
         </div>
     </nav>
 
     <!-- Carousel banner -->
-    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+    <div id="carousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
             <div class="carousel-item active">
                 <img src="../static/img/banner-1.jpg" class="d-block w-100" alt="banner 1">
@@ -64,12 +63,12 @@
                 <img src="../static/img/banner-3.jpg" class="d-block w-100" alt="banner 3">
             </div>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+        <button class="carousel-control-prev" type="button" data-bs-target="#carousel"
                 data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+        <button class="carousel-control-next" type="button" data-bs-target="#carousel"
                 data-bs-slide="next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
@@ -159,7 +158,8 @@
             </p>
             <p>Those works are referenced from CS50 lessons and problem sets, W3schools and CSS-tricks tutorials. And a
                 lot of help from StackOverflow, for sure. </p>
-            <p>Some libraries and frameworks used: Flask, Bootstrap, FontAwesome, Dayjs, CS50, Werkzeug, Jinja, SQLite..</p>
+            <p>Some libraries and frameworks used: Flask, Bootstrap, FontAwesome, Dayjs, CS50, Werkzeug, Jinja,
+                SQLite..</p>
             <p>Languages: Python, Javascript, SQL, HTML, SCSS</p>
         </div>
         <div class="row references d-flex justify-content-around pt-5">
@@ -174,7 +174,8 @@
     <!-- Contact -->
     <section id="contact" class="mx-0 p-5">
         <h1 class="text-center mt-4 ">Contact</h1>
-        <form action="mailto:urhomelibrary@gmail.com" method="post" enctype=”multipart/form-data” class="row w-50 mx-auto mb-3">
+        <form action="mailto:urhomelibrary@gmail.com" method="post" enctype=”multipart/form-data”
+              class="row w-50 mx-auto mb-3">
             <div class="mb-3">
                 <input type="email" class="form-control shadow-sm p-3" id="contact-email" placeholder="Your Email:">
             </div>

@@ -40,13 +40,31 @@ a {
   flex-grow: 0;
 }
 
-#navbarSupportedContent .nav-link {
+#nav-links .nav-link {
   color: $primary;
   font-size: 1.25em;
   font-weight: bold;
   letter-spacing: 0.1em;
   margin-left: 1em;
   text-transform: uppercase;
+}
+
+.nav-tabs {
+  padding-left: 0;
+}
+
+.navbar-brand {
+  height: 60px;
+}
+
+img {
+  display: block;
+  max-height: 100%;
+  width: auto;
+}
+
+#carousel {
+  padding-top: 60px;
 }
 
 /* Section */
@@ -159,9 +177,6 @@ main i {
   background-color: $white;
 }
 
-.nav-tabs {
-  padding-left: 0;
-}
 
 /* Toast */
 .Error {
