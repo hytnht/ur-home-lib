@@ -28,7 +28,7 @@
                             <label for="sr_status" class="form-label">Status</label>
                             <select class="form-select" id="sr_status" name="status"
                                     value='{{"" if not data["status"] else data["status"]}}'>
-                                <option></option>
+                                <option value='{{"" if not data["status"] else data["status"]}}' selected></option>
                                 <option value="End">End</option>
                                 <option value="Hiatus">Hiatus</option>
                                 <option value="Ongoing">Ongoing</option>
