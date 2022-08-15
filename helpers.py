@@ -7,7 +7,7 @@ from flask import request, session, flash, redirect
 # Connect database
 db = SQL("sqlite:///database.db")
 
-
+# Check if a title (book or series) was existed in database, if not decide to add it or not
 def check_exist(table, title, add):
     if not table or not title:
         return None
@@ -19,7 +19,7 @@ def check_exist(table, title, add):
             return None
     return id[0]["id"]
 
-
+# Return series' end volume
 def series_end(series_id):
     if not series_id:
         return 0
@@ -28,7 +28,7 @@ def series_end(series_id):
         return 0
     return series_end[0]["end_vol"]
 
-
+# Return series' current volume
 def series_current(series_id):
     if not series_id:
         return 0
@@ -39,7 +39,7 @@ def series_current(series_id):
         db.execute("UPDATE series SET status = 'End' WHERE id = ?", series_id)
     return series_current[0]["current"]
 
-
+# Return series' missed volumes
 def series_missing(series_id):
     if not series_id:
         return []
@@ -48,7 +48,7 @@ def series_missing(series_id):
         return []
     return series_missing
 
-
+# Return series' available volumes
 def series_avail(series_id):
     if not series_id:
         return []
@@ -60,14 +60,14 @@ def series_avail(series_id):
         avail_vol.append(row["volume"])
     return avail_vol
 
-
+# Query column in user database
 def by_user(column, table):
     if not column or not table:
         return []
     query = db.execute(f"SELECT DISTINCT {column} FROM {table} WHERE user_id = {session['user_id']}")
     return [dict[column] for dict in query]
 
-
+# Insert new book to table
 def insert_book(dict):
     if not dict:
         return None
@@ -108,7 +108,7 @@ def insert_book(dict):
 
     return book_id
 
-
+# Insert new series to table
 def insert_series(dict):
     list_keys = [key for key in dict.keys() if dict[key] != ""]
     keys = ','.join(f'"{key}"' for key in list_keys)
@@ -116,7 +116,7 @@ def insert_series(dict):
     series_id = db.execute(f"INSERT INTO series({keys}, user_id) VALUES({values}, ?)", session["user_id"])
     return series_id
 
-
+# Insert new release date to table
 def insert_calendar(dict):
     if not dict:
         return None
@@ -128,7 +128,7 @@ def insert_calendar(dict):
     calendar_id = db.execute(f"INSERT INTO release_calendar({keys}, series_id) VALUES({values}, ?)", series_id)
     return calendar_id
 
-
+# Check and read file uploaded
 def upload_file(request):
     if not request:
         return []
@@ -154,7 +154,7 @@ def upload_file(request):
 
     return data
 
-
+# Convert column name in database to display in frontend
 def column_name(name):
     if not name:
         return ""
@@ -164,19 +164,19 @@ def column_name(name):
     name = " ".join(word.capitalize() for word in name.split())
     return name
 
-
+# Return list of user custom columns
 def custom_column(table):
     if not table:
         return []
     custom = db.execute("SELECT name FROM user_custom WHERE table_name = ? AND user_id = ?", table, session["user_id"])
     return [row["name"] for row in custom]
 
-
+# Check if user logged in
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if session.get("user_id") is None:
-            return redirect("/login")
+            return redirect("/")
         return f(*args, **kwargs)
 
     return decorated_function
