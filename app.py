@@ -285,31 +285,27 @@ def delete_book():
 
     for id in request.form.keys():
         # Retrieve book information
-        series_id = db.execute("SELECT series_id FROM book WHERE id = ?", id)
-        if not series_id:
-            continue
-        else:
-            series_id = series_id[0]["series_id"]
+        series_id = db.execute("SELECT series_id FROM book WHERE id = ?", id)[0]["series_id"]
 
-        volume = db.execute("SELECT volume FROM book WHERE id = ?", id)
-        if volume and volume[0]["volume"]:
-            volume = int(volume[0]["volume"])
-            print("Vol ", volume)
+        # Update if series not None
+        if series_id:
+            volume = db.execute("SELECT volume FROM book WHERE id = ?", id)
+            if volume and volume[0]["volume"]:
+                volume = int(volume[0]["volume"])
 
-            next_current = 0
-            # Update series current or add missing volume
-            if volume == series_current(series_id):
-                avail_vol = series_avail(series_id)
-                next_current = avail_vol[-2] if len(avail_vol) > 1 else 0
-                db.execute("UPDATE series SET current = ? WHERE id = ?", next_current, series_id)
-            else:
-                db.execute(f'INSERT INTO series_missing(series_id, volume) VALUES ("{series_id}", "{volume}")')
+                next_current = 0
+                # Update series current or add missing volume
+                if volume == series_current(series_id):
+                    avail_vol = series_avail(series_id)
+                    next_current = avail_vol[-2] if len(avail_vol) > 1 else 0
+                    db.execute("UPDATE series SET current = ? WHERE id = ?", next_current, series_id)
+                else:
+                    db.execute(f'INSERT INTO series_missing(series_id, volume) VALUES ("{series_id}", "{volume}")')
 
-            # Delete missing volume bigger than new current volume
-            for missed in series_missing(series_id):
-                if next_current < missed < volume:
-                    db.execute(f'DELETE FROM series_missing WHERE series_id = "{series_id}" AND volume = "{missed}"')
-
+                # Delete missing volume bigger than new current volume
+                for missed in series_missing(series_id):
+                    if next_current < missed < volume:
+                        db.execute(f'DELETE FROM series_missing WHERE series_id = "{series_id}" AND volume = "{missed}"')
 
     ids = ','.join(f'"{key}"' for key in request.form.keys())
 
