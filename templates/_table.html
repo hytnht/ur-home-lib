@@ -3,10 +3,12 @@
         <thead class="text-primary">
         <tr>
             <th class="no-resize">
-                <input class="d-table-cell" type="checkbox" onclick="check_all(this, 'table-row', false)" name="row">
+                <input class="d-table-cell" type="checkbox" onclick="check_all(this, 'no', false)" name="row">
             </th>
             {% for head in table_head %}
-            <th scope="col" name={{'t-'~head}} onclick="sort('{{loop.index}}')">{{ column_name(head) }}</th>
+            <th scope="col" name={{'t-'~head}} id={{'t-'~head}} onclick="sort('{{loop.index}}')">{{ column_name(head)
+                }}
+            </th>
             {% endfor %}
         </tr>
         </thead>
@@ -19,7 +21,8 @@
                 </td>
                 {% for head in table_head %}
                 <td name={{'t-'~head}} id={{data["id"]}} onclick="edit(this.id)">
-                    {{ data[head]|default("", true) }}</td>
+                    {{ data[head]|default("", true) }}
+                </td>
                 {% endfor %}
             </tr>
             {% endfor %}

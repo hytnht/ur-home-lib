@@ -123,15 +123,15 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
                             <div class="form-check dropdown-item px-lg-5">
-                                <input class="form-check-input" type="checkbox" onclick="check_all(this,'table-cell',true)"
-                                       name="col" checked>
+                                <input class="form-check-input" type="checkbox" onclick="check_all(this,'table-cell',true);save(id)"
+                                       name="col" id="check-all-column" checked>
                                 <label class="form-check-label fw-bold text-primary">Select All</label>
                             </div>
                             <hr class="m-0">
                             {% for head in table_head %}
                             <div class="form-check dropdown-item px-lg-5">
-                                <input name={{'bt-'~head}} class="form-check-input c-col" type="checkbox"
-                                       onchange="toggle(this.name,'table-cell')"
+                                <input name={{'bt-'~head}} id={{'bt-'~head}} class="form-check-input c-col" type="checkbox"
+                                       onchange="toggle(this.id,'table-cell');save(this.id)"
                                        checked>
                                 <label class="form-check-label">{{ head }}</label>
                             </div>

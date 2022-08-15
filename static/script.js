@@ -1,5 +1,7 @@
 // Initialize tooltips
-$(document).ready(function () { $('[data-bs-toggle=tooltip]').tooltip();});
+$(document).ready(function () {
+    $('[data-bs-toggle=tooltip]').tooltip();
+});
 
 // Sort columns
 function sort(column) {
@@ -36,17 +38,39 @@ function sort(column) {
     }
 }
 
+// Save checkbox checked
+function save(id) {
+    let box = document.getElementById(id);
+    localStorage.setItem(id, box.checked);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    for (let i = 0; i < localStorage.length; i++) {
+        if (localStorage.key(i) !== "loglevel") {
+            let check = (localStorage.getItem(localStorage.key(i)) === 'true');
+            if (check !== null) {
+                let box = document.getElementById(localStorage.key(i));
+                box.checked = check;
+                toggle(localStorage.key(i), 'table-cell')
+                if (localStorage.getItem("check-all-column") === 'false')
+                    document.getElementById("table-display").style.display = 'none'
+            }
+        }
+    }
+})
+
 // Select all checkboxes which classes included 'c' (check) + checkbox's name
 function check_all(box, toggleMode, tableHide) {
-    let col = document.getElementsByClassName('c-' + box.name)
-    for (let i = 0; i < col.length; i++) {
-        col[i].checked = box.checked
-        if (toggleMode) {
-            toggle(col[i].getAttribute("name"), toggleMode)
+    let boxes = document.getElementsByClassName('c-' + box.name)
+    for (let i = 0; i < boxes.length; i++) {
+        boxes[i].checked = box.checked;
+        localStorage.setItem(boxes[i].id, box.checked);
+        if (toggleMode !== 'no') {
+            toggle(boxes[i].id, toggleMode)
         }
     }
     if (tableHide) {
-        if (box.checked == false)
+        if (box.checked === false)
             document.getElementById("table-display").style.display = 'none'
         else
             document.getElementById("table-display").style.display = 'table'
@@ -54,23 +78,24 @@ function check_all(box, toggleMode, tableHide) {
 }
 
 // Checkbox toggle column which name = checkbox's name omitted the starting 'b' (button)
-function toggle(boxName, mode) {
-    let box = document.getElementsByName(boxName)[0];
-    let col = document.getElementsByName(boxName.substring(1))
-    if (box.checked) {
-        document.getElementById("table-display").style.display = 'table'
-        for (let i = 0; i < col.length; i++)
-            col[i].style.display = mode
+function toggle(id, mode) {
+    let box = document.getElementById(id);
+    let col = document.getElementsByName(id.substring(1))
+    if (col !== null) {
+        if (box.checked) {
+            document.getElementById("table-display").style.display = 'table'
+            for (let i = 0; i < col.length; i++)
+                col[i].style.display = mode
+        } else {
+            for (let i = 0; i < col.length; i++)
+                col[i].style.display = 'none'
+        }
     }
-    else
-        for (let i = 0; i < col.length; i++)
-            col[i].style.display = 'none'
 }
 
 // Edit data modal
 function edit(id) {
-    current =  window.location.href.split('?')[0].split('#')[0]
-    console.log(id)
+    current = window.location.href.split('?')[0].split('#')[0]
     return window.location.replace(current + "/edit?id=" + id)
 }
 
@@ -109,6 +134,7 @@ function reset_pass() {
         .then(response => response.text())
         .then(text => document.querySelector("#modal-template").innerHTML = text);
 }
+
 //</editor-fold>
 
 
@@ -122,6 +148,7 @@ function display_mode() {
         window.location.replace('/calendar?display=calendar');
     }
 }
+
 document.addEventListener("DOMContentLoaded", function () {
     let mode = document.getElementById("display-content").getAttribute("mode");
     let button = document.getElementById("display-button");

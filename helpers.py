@@ -95,8 +95,6 @@ def update_series(series_id, volume):
 
     # Update new missing volumes
     avail = series_avail(series_id)
-    print(avail)
-    print(missed)
     for i in range(1, volume):
         if i not in avail and i not in missed:
             db.execute("INSERT INTO series_missing(series_id, volume) VALUES(?, ?)", series_id, i)
@@ -123,11 +121,13 @@ def insert_book(dict):
                          session["user_id"])
 
     # Add accessories to book
-    if request.form.get("ac_type"):
+    if dict["ac_type"]:
+        print(dict.keys())
         list_ac_keys = [key for key in dict.keys() if key[0:3] == "ac_" and dict[key] != ""]
         ac_keys = ','.join(f'"{key[3:]}"' for key in list_ac_keys)
         ac_values = ','.join(f'"{dict[key]}"' for key in list_ac_keys)
-        db.execute(f"INSERT INTO accessory({ac_keys}, book_id) VALUES({ac_values},?)", book_id)
+        print(f"INSERT INTO accessory({ac_keys}, book_id) VALUES({ac_values}, ?)")
+        db.execute(f"INSERT INTO accessory({ac_keys}, book_id) VALUES({ac_values}, ?)", book_id)
 
     return book_id
 
@@ -177,7 +177,6 @@ def upload_file(request):
     file.seek(0)
     reader = file.read().decode("utf-8-sig")
     data = [{k: v for k, v in row.items()} for row in csv.DictReader(reader.splitlines(), skipinitialspace=True)]
-    print(data)
     return data
 
 
