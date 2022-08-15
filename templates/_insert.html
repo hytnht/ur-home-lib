@@ -347,11 +347,11 @@
 
                             <div class="col-sm-9">
                                 <label for="lg_book" class="form-label">Book</label>
-                                <input class="form-control" list="books-list" name="title" id="lg_book">
+                                <input class="form-control" list="books-list" name="book" id="lg_book">
                                 <datalist id="books-list">
                                     <option></option>
-                                    {% for title in books %}
-                                    <option>{{ title }}</option>
+                                    {% for book in books %}
+                                    <option value='*ID for duplicates: {{book["id"]}}';>{{ book["title"] }}</option>
                                     {% endfor %}
                                 </datalist>
                             </div>

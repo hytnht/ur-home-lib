@@ -68,6 +68,11 @@ def by_user(column, table):
     query = db.execute(f"SELECT DISTINCT {column} FROM {table} WHERE user_id = {session['user_id']}")
     return [dict[column] for dict in query]
 
+def dict_by_user(columns, table):
+    if not columns or not table:
+        return []
+    query = db.execute(f"SELECT DISTINCT {columns} FROM {table} WHERE user_id = {session['user_id']}")
+    return query
 
 # Update series based on insert/update book
 def update_series(series_id, volume):

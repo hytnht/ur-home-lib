@@ -3,8 +3,8 @@
         <div class="modal-content rounded-5 shadow px-5">
             <div class="container my-5">
                 <!-- Form -->
-                <form action="/edit-log" method="post" id="edit-log-form"
-                      class="needs-validation accordion tab-pane fade"
+                <form action="/log/edit" method="post" id="edit-log-form"
+                      class="needs-validation accordion"
                       autocomplete="off"
                       novalidate role="tabpanel">
                     <h6 class="mb-3">
@@ -27,11 +27,11 @@
                         <div class="col-sm-9">
                             <label for="lg_book" class="form-label">Book</label>
                             <input class="form-control" list="books-list"
-                                   value='{{"" if not data["title"] else data["title"]}}' name="title" id="lg_book">
+                                   value='{{"" if not data["title"] else data["title"]}}' name="book" id="lg_book">
                             <datalist id="books-list">
                                 <option></option>
-                                {% for title in books %}
-                                <option>{{ title }}</option>
+                                {% for book in books %}
+                                <option value='*ID for duplicates: {{book["id"]}}';>{{ book["title"] }}</option>
                                 {% endfor %}
                             </datalist>
                         </div>

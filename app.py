@@ -57,10 +57,10 @@ def library():
 
     # If database was not blank
     if len(books) > 0:
-        columns = [key for key in books[0].keys() if "id" not in key]
+        columns = [key for key in books[0].keys() if "_id" not in key]
         return render_template("layout.html", title="Library", content="_table.html",
                                table_head=columns, table_data=books,
-                               series=by_user("title", "series"), books=by_user("title", "book"),
+                               series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
                                categories=by_user("category", "book"),
                                custom=custom_column("book"), sr_custom=custom_column("series"),
                                pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
@@ -83,7 +83,7 @@ def series():
         columns = [key for key in series[0].keys() if "id" not in key]
         return render_template("layout.html", title="Series", content="_table.html",
                                table_head=columns, table_data=series,
-                               series=by_user("title", "series"), books=by_user("title", "book"),
+                               series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
                                categories=by_user("category", "book"),
                                custom=custom_column("book"), sr_custom=custom_column("series"),
                                pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
@@ -107,7 +107,7 @@ def accessory():
         columns = [key for key in accessories[0].keys() if "id" not in key]
         return render_template("layout.html", title="Accessories", content="_table.html",
                                table_head=columns, table_data=accessories,
-                               series=by_user("title", "series"), books=by_user("title", "book"),
+                               series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
                                categories=by_user("category", "book"),
                                custom=custom_column("book"), sr_custom=custom_column("series"),
                                pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
@@ -127,16 +127,23 @@ def log():
     # If database was not blank
     if len(log) > 0:
         columns = [key for key in log[0].keys() if "id" not in key]
+        print(dict_by_user("id, title", "book"))
         return render_template("layout.html", title="Log", content="_table.html",
                                table_head=columns, table_data=log,
-                               series=by_user("title", "series"), books=by_user("title", "book"),
+                               series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
                                categories=by_user("category", "book"),
                                custom=custom_column("book"), sr_custom=custom_column("series"),
                                pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
                                delete="log",
                                username=session["username"])
 
-    return render_template("layout.html", title="Log", content="_blank.html", username=session["username"])
+    return render_template("layout.html", title="Log", content="_blank.html",
+                           series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
+                           categories=by_user("category", "book"),
+                           custom=custom_column("book"), sr_custom=custom_column("series"),
+                           pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
+                           delete="log",
+                           username=session["username"])
 
 
 @app.route("/calendar")
@@ -155,7 +162,7 @@ def calendar():
                                    custom=custom_column("book"), sr_custom=custom_column("series"),
                                    categories=by_user("category", "book"),
                                    pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
-                                   series=by_user("title", "series"), books=by_user("title", "book"),
+                                   series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
                                    delete="calendar",
                                    username=session["username"])
         return render_template("calendar.html", content="_blank.html", mode="table", username=session["username"])
@@ -234,14 +241,18 @@ def new_log():
         return redirect("/log")
 
     # Ensure book title was submitted
-    if not request.form.get("title"):
+    if not request.form.get("book"):
         flash("Please enter the book title", "Error")
         return redirect("/log")
 
-    book_id = check_exist("book", request.form.get("title"), add="True")
+    # Check if user chose from book datalist or new input
+    if "*ID for duplicates: " in request.form.get("book"):
+        book_id = request.form.get("book")[len("*ID for duplicates: "):]
+    else:
+        book_id = check_exist("book", request.form.get("book"), add="True")
 
     list_keys = [key for key in request.form.keys() if
-                 "id" not in key and key != "title" and request.form.get(key) != ""]
+                 "id" not in key and key != "book" and request.form.get(key) != ""]
     keys = ','.join(f'"{key}"' for key in list_keys)
     values = ','.join(f'"{request.form.get(key)}"' for key in list_keys)
     db.execute(f"INSERT INTO log({keys}, book_id) VALUES({values}, ?)", book_id)
@@ -511,16 +522,20 @@ def edit_log():
             return redirect("/log")
 
         # Ensure book title was submitted
-        if not request.form.get("title"):
+        if not request.form.get("book"):
             flash("Please enter the book title", "Error")
             return redirect("/log")
 
-        book_id = check_exist("book", request.form.get("title"), add="True")
+        # Check if user chose from book datalist or new input
+        if "*ID for duplicates: " in request.form.get("book"):
+            book_id = request.form.get("book")[len("*ID for duplicates: "):]
+        else:
+            book_id = check_exist("book", request.form.get("book"), add="True")
 
-        list_keys = [key for key in request.form.keys() if "id" not in key and key != "title"]
+        list_keys = [key for key in request.form.keys() if "id" not in key and key != "book"]
         query = ','.join(
             f'"{key}" = NULLIF(NULLIF("{request.form[key] if request.form[key] else ""}","")' for key in list_keys)
-        db.execute(f"UPDATE log SET {query}, book_id = ?, WHERE id = ?", book_id, request.form.get("id"))
+        db.execute(f"UPDATE log SET {query}, user_id = ?, WHERE id = ?", book_id, request.form.get("id"))
 
         flash("Log updated.", "Success")
         return redirect("/log")
@@ -529,7 +544,7 @@ def edit_log():
         if log is None or len(log) == 0:
             return redirect("/log")
         return render_template("layout.html", title="Log", content="_edit_log.html", data=log[0],
-                               books=by_user("title", "book"), lg_custom=custom_column("log"),
+                               books=dict_by_user("id, title", "book"), lg_custom=custom_column("log"),
                                username=session["username"])
 
 
@@ -556,7 +571,7 @@ def edit_calendar():
         flash("Calendar updated.", "Success")
         return redirect("/calendar")
     else:
-        calendar = db.execute("SELECT * FROM calendar WHERE id = ?", request.args.get("id"))
+        calendar = db.execute("SELECT * FROM release_calendar WHERE id = ?", request.args.get("id"))
         if calendar is None or len(calendar) == 0:
             return redirect("/calendar")
         return render_template("layout.html", title="Calendar", content="_edit_calendar.html", data=calendar[0],
