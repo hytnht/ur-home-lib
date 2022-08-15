@@ -106,7 +106,7 @@ def update_series(series_id, volume):
 def insert_book(dict):
     if not dict:
         return None
-    if not dict["series"] or "series" not in dict.keys():
+    if "series" not in dict.keys() or not dict["series"]:
         series_id = None
     else:
         # Add series if not exist
@@ -177,7 +177,7 @@ def upload_file(request):
     file.seek(0)
     reader = file.read().decode("utf-8-sig")
     data = [{k: v for k, v in row.items()} for row in csv.DictReader(reader.splitlines(), skipinitialspace=True)]
-
+    print(data)
     return data
 
 

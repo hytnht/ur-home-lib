@@ -37,7 +37,7 @@ function sort(column) {
 }
 
 // Select all checkboxes which classes included 'c' (check) + checkbox's name
-function check_all(box, toggleMode) {
+function check_all(box, toggleMode, tableHide) {
     let col = document.getElementsByClassName('c-' + box.name)
     for (let i = 0; i < col.length; i++) {
         col[i].checked = box.checked
@@ -45,23 +45,26 @@ function check_all(box, toggleMode) {
             toggle(col[i].getAttribute("name"), toggleMode)
         }
     }
-    if (box.checked == false)
-        document.getElementById("table-display").style.display = 'none'
-    else
-        document.getElementById("table-display").style.display = 'table'
+    if (tableHide) {
+        if (box.checked == false)
+            document.getElementById("table-display").style.display = 'none'
+        else
+            document.getElementById("table-display").style.display = 'table'
+    }
 }
 
 // Checkbox toggle column which name = checkbox's name omitted the starting 'b' (button)
 function toggle(boxName, mode) {
     let box = document.getElementsByName(boxName)[0];
     let col = document.getElementsByName(boxName.substring(1))
-    if (box.checked)
+    if (box.checked) {
+        document.getElementById("table-display").style.display = 'table'
         for (let i = 0; i < col.length; i++)
             col[i].style.display = mode
+    }
     else
         for (let i = 0; i < col.length; i++)
             col[i].style.display = 'none'
-
 }
 
 // Edit data modal

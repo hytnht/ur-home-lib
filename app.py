@@ -58,7 +58,6 @@ def library():
                        "WHERE book.user_id = ?", session["user_id"])
 
     # If database was not blank
-    print(custom_column("book"))
     if len(books) > 0:
         columns = [key for key in books[0].keys() if "_id" not in key]
         return render_template("layout.html", title="Library", content="_table.html",
@@ -67,15 +66,14 @@ def library():
                                categories=by_user("category", "book"),
                                custom=custom_column("book"), sr_custom=custom_column("series"),
                                pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
-                               username=session["username"])
+                               delete="book", username=session["username"])
 
     return render_template("layout.html", title="Library", content="_blank.html",
                            series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
                            categories=by_user("category", "book"),
                            custom=custom_column("book"), sr_custom=custom_column("series"),
                            pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
-                           delete="book",
-                           username=session["username"])
+                           delete="book", username=session["username"])
 
 
 @app.route("/series")
@@ -95,15 +93,14 @@ def series():
                                categories=by_user("category", "book"),
                                custom=custom_column("book"), sr_custom=custom_column("series"),
                                pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
-                               delete="series",
-                               username=session["username"])
+                               delete="series", username=session["username"])
 
     return render_template("layout.html", title="Series", content="_blank.html",
                            series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
                            categories=by_user("category", "book"),
                            custom=custom_column("book"), sr_custom=custom_column("series"),
                            pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
-                           username=session["username"])
+                           delete="series", username=session["username"])
 
 
 @app.route("/accessory")
@@ -124,14 +121,14 @@ def accessory():
                                categories=by_user("category", "book"),
                                custom=custom_column("book"), sr_custom=custom_column("series"),
                                pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
-                               username=session["username"])
+                               delete="accessory", username=session["username"])
 
     return render_template("layout.html", title="Accessories", content="_blank.html",
                            series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
                            categories=by_user("category", "book"),
                            custom=custom_column("book"), sr_custom=custom_column("series"),
                            pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
-                           username=session["username"])
+                           delete="accessory", username=session["username"])
 
 
 @app.route("/log")
@@ -150,15 +147,14 @@ def log():
                                categories=by_user("category", "book"),
                                custom=custom_column("book"), sr_custom=custom_column("series"),
                                pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
-                               delete="log",
-                               username=session["username"])
+                               delete="log", username=session["username"])
 
     return render_template("layout.html", title="Log", content="_blank.html",
                            series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
                            categories=by_user("category", "book"),
                            custom=custom_column("book"), sr_custom=custom_column("series"),
                            pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
-                           username=session["username"])
+                           delete="log", username=session["username"])
 
 
 @app.route("/calendar")
@@ -178,14 +174,13 @@ def calendar():
                                    categories=by_user("category", "book"),
                                    pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
                                    series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
-                                   delete="calendar",
-                                   username=session["username"])
+                                   delete="calendar", username=session["username"])
         return render_template("calendar.html", content="_blank.html", mode="table",
                                custom=custom_column("book"), sr_custom=custom_column("series"),
                                categories=by_user("category", "book"),
                                pb_custom=custom_column("release_calendar"), lg_custom=custom_column("log"),
                                series=by_user("title", "series"), books=dict_by_user("id, title", "book"),
-                               username=session["username"])
+                               delete="calendar", username=session["username"])
 
 
 # </editor-fold>
@@ -821,27 +816,31 @@ def logout():
 @app.route("/mass-upload", methods=['POST'])
 @login_required
 def mass_upload():
-    data = upload_file(request.files)
-    table = request.form.get("table")
+    # try:
+        data = upload_file(request.files)
+        table = request.form.get("table")
 
-    if table == "book":
-        for dict in data:
-            insert_book(dict)
-        flash("File uploaded.", "Success")
-        return redirect("/library")
-    elif table == "series":
-        for dict in data:
-            insert_series(dict)
-        flash("Series uploaded.", "Success")
-        return redirect("/series")
-    elif table == "calendar":
-        for dict in data:
-            insert_calendar(dict)
-        flash("Calendar uploaded.", "Success")
-        return redirect("/calendar")
-    else:
-        flash("Wrong table.", "Error")
-        return redirect("/library")
+        if table == "book":
+            for dict in data:
+                insert_book(dict)
+            flash("File uploaded.", "Success")
+            return redirect("/library")
+        elif table == "series":
+            for dict in data:
+                insert_series(dict)
+            flash("Series uploaded.", "Success")
+            return redirect("/series")
+        elif table == "calendar":
+            for dict in data:
+                insert_calendar(dict)
+            flash("Calendar uploaded.", "Success")
+            return redirect("/calendar")
+        else:
+            flash("Wrong table.", "Error")
+            return redirect("/library")
+    # except:
+    #     flash("Wrong file.", "Error")
+    #     return redirect("/library")
 
 
 @app.route("/export-data")
@@ -879,15 +878,15 @@ def export():
 @login_required
 def get_template():
     book = ['isbn', 'title', 'author', 'publisher', 'category', 'original_language', 'translated_language',
-            'price', 'year', 'page', 'note', 'series_id', 'edition', 'volume', 'country', 'cover', 'status',
-            'ratings'] + custom_column("book")
+            'price', 'year', 'page', 'note', 'series', 'edition', 'volume', 'country', 'cover', 'status',
+            'ratings', 'ac_type', 'ac_qty', 'ac_material', 'ac_status'] + custom_column("book")
     series = ['current', 'end_vol', 'status', 'title'] + custom_column("series")
-    calendar = ['publisher', 'volume', 'date'] + custom_column("calendar")
+    calendar = ['publisher', 'volume', 'date', 'series'] + custom_column("calendar")
 
     if not os.path.exists('./static/export'):
         os.makedirs("./static/export")
     with open("./static/export/template.csv", "w") as file:
-        writer = csv.writer(file, delimiter=';')
+        writer = csv.writer(file)
         file.write("Instruction: Choose only 1 columns set below for corresponding table. "
                    "Paste it to the very first line of upload file as the header. "
                    "Then enter data into next lines. Save as CSV and upload.\n\n")
