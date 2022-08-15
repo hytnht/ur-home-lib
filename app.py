@@ -297,21 +297,20 @@ def delete_book():
             print("Vol ", volume)
 
             next_current = 0
-            # Update series current
+            # Update series current or add missing volume
             if volume == series_current(series_id):
                 avail_vol = series_avail(series_id)
-                next_current = avail_vol[-2] if len(avail_vol) > 2 else 0
+                next_current = avail_vol[-2] if len(avail_vol) > 1 else 0
                 db.execute("UPDATE series SET current = ? WHERE id = ?", next_current, series_id)
+            else:
+                db.execute(f'INSERT INTO series_missing(series_id, volume) VALUES ("{series_id}", "{volume}")')
 
             # Delete missing volume bigger than new current volume
             for missed in series_missing(series_id):
                 if next_current < missed < volume:
-                    print("next_current < missed < volume: ", missed)
-                    print("Sid ", series_id)
-                    db.execute(f'DELETE FROM series_missing WHERE series_id = "{series_id}" AND volume = "{volume}"')
+                    db.execute(f'DELETE FROM series_missing WHERE series_id = "{series_id}" AND volume = "{missed}"')
 
-            # Add missing volume
-            db.execute(f'INSERT INTO series_missing(series_id, volume) VALUES ("{series_id}", "{volume}")')
+
     ids = ','.join(f'"{key}"' for key in request.form.keys())
 
     # Delete from accessory table
