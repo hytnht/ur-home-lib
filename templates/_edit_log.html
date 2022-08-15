@@ -29,7 +29,8 @@
                             <input class="form-control" list="books-list"
                                    value='{{"" if not data["title"] else data["title"]}}' name="book" id="lg_book">
                             <datalist id="books-list">
-                                <option></option>
+                                <option value='{{"" if not data["title"] else data["title"]}}' selected>
+                                    {{data["title"]}}</option>
                                 {% for book in books %}
                                 <option value='*ID for duplicates: {{book["id"]}}';>{{ book["title"] }}</option>
                                 {% endfor %}

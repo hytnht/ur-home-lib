@@ -534,13 +534,15 @@ def edit_log():
 
         list_keys = [key for key in request.form.keys() if "id" not in key and key != "book"]
         query = ','.join(
-            f'"{key}" = NULLIF(NULLIF("{request.form[key] if request.form[key] else ""}","")' for key in list_keys)
-        db.execute(f"UPDATE log SET {query}, user_id = ?, WHERE id = ?", book_id, request.form.get("id"))
+            f'"{key}" = NULLIF("{request.form[key] if request.form[key] else ""}","")' for key in list_keys)
+        print(f"UPDATE log SET {query}, book_id = ? WHERE id = ?")
+        db.execute(f"UPDATE log SET {query}, book_id = ? WHERE id = ?", book_id, request.form.get("id"))
 
         flash("Log updated.", "Success")
         return redirect("/log")
     else:
-        log = db.execute("SELECT * FROM log WHERE id = ?", request.args.get("id"))
+        log = db.execute("SELECT log.*, book.title FROM log LEFT JOIN book "
+                         "ON log.book_id = book.id WHERE log.id = ?", request.args.get("id"))
         if log is None or len(log) == 0:
             return redirect("/log")
         return render_template("layout.html", title="Log", content="_edit_log.html", data=log[0],
