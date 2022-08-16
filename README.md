@@ -1,5 +1,45 @@
 # YOUR HOME LIBRARY
 
+
+## About
+
+This is the final project for CS50 Introduction to Computer Science by Havard University. The concept is a website to
+manage your book collection, focused on series tracker. It was inspired by my big bookshelves of which more than half
+are manga series. It's hard to find the missing volumes if I forgot to buy, even for a short time. So my first idea was
+to create a tool to keep tracking and automatically update the current book series status.
+
+### Demo
+####[Video](https://youtu.be/JIrX1scqqEw)
+![Screenshot 1](./static/img/screenshot5.jpg)
+![Screenshot 2](./static/img/screenshot2.jpg)
+![Screenshot 3](./static/img/screenshot3.jpg)
+![Screenshot 3](./static/img/screenshot4.jpg)
+
+### References
+
+- CS50 lessons and problem sets.
+- W3schools.
+- CSS-tricks tutorials.
+- StackOverflow.
+
+### Libraries, frameworks and engines
+
+- Flask for web server development Werkzeug for security and Jinja for templates engine.
+- CS50 for simple built-in SQL functions.
+- SQLite for database management.
+- Dayjs for date format.
+- Bootstrap, FontAwesome for front-end designing.
+- And 1 line of jQuery to activate Bootstrap tooltips.
+
+### Languages
+
+Python, Javascript, SQL, HTML, SASS.
+
+### Other
+
+Canva templates for designing banners.\
+Lovo.ai for the video demo's voiceover.
+
 ## Build and run
 
 ### Requirements
@@ -80,41 +120,5 @@ Run project using Flask in root folder:
 ```shell script
 $ flask run 
 ```
-
-## About
-
-This is the final project for CS50 Introduction to Computer Science by Havard University. The concept is a website to
-manage your book collection, focused on series tracker. It was inspired by my big bookshelves of which more than half
-are manga series. It's hard to find the missing volumes if I forgot to buy, even for a short time. So my first idea was
-to create a tool to keep tracking and automatically update the current book series status.
-
-##### Video Demo: https://youtu.be/JIrX1scqqEw
-
-### References
-
-- CS50 lessons and problem sets.
-- W3schools.
-- CSS-tricks tutorials.
-- StackOverflow.
-
-### Libraries, frameworks and engines
-
-- Flask for web server development Werkzeug for security and Jinja for templates engine.
-- CS50 for simple built-in SQL functions.
-- SQLite for database management.
-- Dayjs for date format.
-- Bootstrap, FontAwesome for front-end designing.
-- And 1 line of jQuery to activate Bootstrap tooltips.
-
-### Languages
-
-Python, Javascript, SQL, HTML, SASS.
-
-### Other
-
-Canva templates for designing banners.\
-Lovo.ai for the video demo's voiceover.
-
-
 
 
