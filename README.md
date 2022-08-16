@@ -9,7 +9,7 @@ are manga series. It's hard to find the missing volumes if I forgot to buy, even
 to create a tool to keep tracking and automatically update the current book series status.
 
 ### Demo
-####[Video](https://youtu.be/JIrX1scqqEw)
+#### [Video](https://youtu.be/JIrX1scqqEw)
 ![Screenshot 1](./static/img/screenshot5.jpg)
 ![Screenshot 2](./static/img/screenshot2.jpg)
 ![Screenshot 3](./static/img/screenshot3.jpg)
