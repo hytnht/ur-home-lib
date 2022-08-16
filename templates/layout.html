@@ -133,7 +133,7 @@
                                 <input name={{'bt-'~head}} id={{'bt-'~head}} class="form-check-input c-col" type="checkbox"
                                        onchange="toggle(this.id,'table-cell');save(this.id)"
                                        checked>
-                                <label class="form-check-label">{{ head }}</label>
+                                <label class="form-check-label">{{ column_name(head) }}</label>
                             </div>
                             {% endfor %}
                         </div>
