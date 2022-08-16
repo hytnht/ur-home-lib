@@ -856,21 +856,24 @@ def export():
 
     if not os.path.exists('./static/export'):
         os.makedirs("./static/export")
-
-    with open("./static/export/book_data.csv", "w") as file_book:
-        writer = csv.writer(file_book, delimiter=';')
-        writer.writerow(book_data[0].keys())
-        for data in book_data:
-            writer.writerow(data.values())
-
-    with open("./static/export/series_data.csv", "w") as file_series:
-        writer = csv.writer(file_series, delimiter=';')
-        writer.writerow(series_data[0].keys())
-        for data in series_data:
-            writer.writerow(data.values())
-
-    flash(f"Your book data is exported in {os.path.realpath(file_book.name)}", "Success")
-    flash(f"Your series data is exported in {os.path.realpath(file_series.name)}", "Success")
+    if len(book_data) > 0:
+        with open("./static/export/book_data.csv", "w") as file_book:
+            writer = csv.writer(file_book, delimiter=';')
+            writer.writerow(book_data[0].keys())
+            for data in book_data:
+                writer.writerow(data.values())
+            flash(f"Your book data is exported in {os.path.realpath(file_book.name)}", "Success")
+    else:
+        flash(f"Your book data is blank. Nothing to export.", "Error")
+    if len(series_data) > 0:
+        with open("./static/export/series_data.csv", "w") as file_series:
+            writer = csv.writer(file_series, delimiter=';')
+            writer.writerow(series_data[0].keys())
+            for data in series_data:
+                writer.writerow(data.values())
+            flash(f"Your series data is exported in {os.path.realpath(file_series.name)}", "Success")
+    else:
+        flash(f"Your series data is blank. Nothing to export.", "Error")
     return redirect("/library")
 
 
