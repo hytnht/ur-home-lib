@@ -83,31 +83,38 @@ $ flask run
 
 ## About
 
-This is the final project for CS50 Introduction to Computer Science by Havard University. A website to manage your book
-collection which was inspired by my big bookshelves. The concept was to create a tool to keep tracking and automatically
-update the current book series status.
+This is the final project for CS50 Introduction to Computer Science by Havard University. The concept is a website to
+manage your book collection, focused on series tracker. It was inspired by my big bookshelves of which more than half
+are manga series. It's hard to find the missing volumes if I forgot to buy, even for a short time. So my first idea was
+to create a tool to keep tracking and automatically update the current book series status.
 
 ##### Video Demo: https://youtu.be/JIrX1scqqEw
 
 ### References
 
-- CS50 lessons and problem sets
-- W3schools
-- CSS-tricks tutorials
-- StackOverflow
+- CS50 lessons and problem sets.
+- W3schools.
+- CSS-tricks tutorials.
+- StackOverflow.
 
 ### Libraries, frameworks and engines
 
-Flask, Bootstrap, FontAwesome, Dayjs, CS50, Werkzeug, Jinja, SQLite, SASS and 1 line of jquery.
+- Flask for web server development Werkzeug for security and Jinja for templates engine.
+- CS50 for simple built-in SQL functions.
+- SQLite for database management.
+- Dayjs for date format.
+- Bootstrap, FontAwesome for front-end designing.
+- And 1 line of jQuery to activate Bootstrap tooltips.
 
 ### Languages
 
-Python, Javascript, SQL, HTML, CSS.
+Python, Javascript, SQL, HTML, SASS.
 
 ### Other
 
 Canva templates for designing banners.\
-Lovo.ai for video voiceover.
+Lovo.ai for the video demo's voiceover.
+
 
 
 
